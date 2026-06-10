@@ -1,0 +1,176 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{display:flex;gap:20px;align-items:flex-start;padding:1rem 0;font-size:13px;color:var(--color-text-primary)}
+.mobile-frame{width:280px;flex-shrink:0;border:2px solid var(--color-border-primary);border-radius:28px;overflow:hidden;background:var(--color-background-primary)}
+.m-status{background:#111;color:#fff;font-size:10px;padding:4px 14px;display:flex;justify-content:space-between;align-items:center}
+.m-topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:10px 14px;display:flex;align-items:center;gap:8px}
+.m-topbar-title{font-size:13px;font-weight:500;flex:1}
+.m-body{background:var(--color-background-tertiary)}
+.scan-zone{background:#000;position:relative;height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.cam-feed{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#111 0px,#111 1px,#1a1a1a 1px,#1a1a1a 8px)}
+.viewfinder{position:relative;width:160px;height:100px;z-index:2}
+.vf-corner{position:absolute;width:18px;height:18px;border-color:#fff;border-style:solid;opacity:.9}
+.vf-tl{top:0;left:0;border-width:2px 0 0 2px;border-radius:3px 0 0 0}
+.vf-tr{top:0;right:0;border-width:2px 2px 0 0;border-radius:0 3px 0 0}
+.vf-bl{bottom:0;left:0;border-width:0 0 2px 2px;border-radius:0 0 0 3px}
+.vf-br{bottom:0;right:0;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
+.scan-line{position:absolute;left:0;right:0;height:1.5px;background:#1D9E75;top:50%;animation:scanline 1.8s ease-in-out infinite}
+@keyframes scanline{0%,100%{top:15%}50%{top:85%}}
+.scan-hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.6);z-index:2}
+.scan-mode-bar{background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);padding:8px 14px;display:flex;gap:6px}
+.mode-btn{flex:1;padding:5px 0;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-size:11px;font-weight:500;cursor:pointer;text-align:center;background:transparent;color:var(--color-text-secondary)}
+.mode-btn.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+.item-list{padding:10px 12px}
+.item-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.item-row:last-child{border-bottom:none}
+.item-icon{width:28px;height:28px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.icon-ok{background:#E1F5EE;color:#0F6E56}
+.icon-div{background:#FAEEDA;color:#854F0B}
+.icon-wait{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-sku{font-size:10px;color:var(--color-text-tertiary);font-family:var(--font-mono)}
+.item-count{font-size:12px;font-weight:500;text-align:right;flex-shrink:0}
+.count-ok{color:#0F6E56}
+.count-div{color:#854F0B}
+.count-wait{color:var(--color-text-tertiary)}
+.m-footer{padding:10px 12px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.progress-bar-wrap{margin-bottom:8px}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px}
+.progress-track{height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width .4s}
+.btn-confirm{width:100%;padding:9px;border-radius:var(--border-radius-md);border:none;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-confirm.ready{background:#0F6E56;color:#E1F5EE}
+.btn-confirm.not-ready{background:var(--color-background-secondary);color:var(--color-text-tertiary);cursor:not-allowed}
+.detail-panel{flex:1;min-width:0}
+.panel-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:12px}
+.panel-title{font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:var(--color-text-primary)}
+.panel-title i{font-size:15px;color:var(--color-text-secondary)}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--color-text-secondary)}
+.info-val{font-weight:500;text-align:right}
+.log-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.log-item:last-child{border-bottom:none}
+.log-time{color:var(--color-text-tertiary);font-family:var(--font-mono);font-size:11px;flex-shrink:0;width:42px}
+.log-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+.log-ok{color:#0F6E56}
+.log-div{color:#854F0B}
+.badge-sm{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px;margin-left:4px}
+.b-ok{background:#E1F5EE;color:#085041}
+.b-div{background:#FAEEDA;color:#633806}
+.b-code{background:var(--color-background-secondary);color:var(--color-text-secondary);font-family:var(--font-mono)}
+.tip-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.tip-box strong{font-weight:500;color:var(--color-text-primary)}
+@media(prefers-color-scheme:dark){
+  .icon-ok{background:#085041;color:#9FE1CB}
+  .icon-div{background:#633806;color:#FAC775}
+  .b-ok{background:#085041;color:#9FE1CB}
+  .b-div{background:#633806;color:#FAC775}
+  .btn-confirm.ready{background:#1D9E75;color:#04342C}
+  .count-ok{color:#1D9E75}
+  .count-div{color:#EF9F27}
+  .scan-line{background:#1D9E75}
+}
+</style>
+
+<div class="wrap">
+  <div class="mobile-frame">
+    <div class="m-status">
+      <span>09:14</span><span>WMS Formuca</span><span>4G</span>
+    </div>
+    <div class="m-topbar">
+      <i class="ti ti-arrow-left" style="font-size:15px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+      <div class="m-topbar-title">Conferência — NF-041823</div>
+      <i class="ti ti-dots-vertical" style="font-size:15px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+    </div>
+    <div class="scan-zone">
+      <div class="cam-feed"></div>
+      <div class="viewfinder">
+        <div class="vf-corner vf-tl"></div>
+        <div class="vf-corner vf-tr"></div>
+        <div class="vf-corner vf-bl"></div>
+        <div class="vf-corner vf-br"></div>
+        <div class="scan-line"></div>
+      </div>
+      <div class="scan-hint">Aponte para EAN ou QR do produto</div>
+    </div>
+    <div class="scan-mode-bar">
+      <button class="mode-btn on">EAN / Barras</button>
+      <button class="mode-btn">QR interno</button>
+      <button class="mode-btn">Manual</button>
+    </div>
+    <div class="item-list">
+      <div class="item-row">
+        <div class="item-icon icon-ok"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <div class="item-info">
+          <div class="item-name">Caixa papelão 40x30</div>
+          <div class="item-sku">SKU-00821 · A-01-03</div>
+        </div>
+        <div class="item-count count-ok">24/24</div>
+      </div>
+      <div class="item-row">
+        <div class="item-icon icon-div"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div>
+        <div class="item-info">
+          <div class="item-name">Fita adesiva 48mm</div>
+          <div class="item-sku">SKU-00344 · sem posição</div>
+        </div>
+        <div class="item-count count-div">20/24</div>
+      </div>
+      <div class="item-row">
+        <div class="item-icon icon-wait"><i class="ti ti-scan" aria-hidden="true"></i></div>
+        <div class="item-info">
+          <div class="item-name">Plástico-bolha rolo</div>
+          <div class="item-sku">SKU-00512 · aguardando</div>
+        </div>
+        <div class="item-count count-wait">0/12</div>
+      </div>
+    </div>
+    <div class="m-footer">
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span>Progresso</span><span>44 / 60 unidades</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:73%"></div></div>
+      </div>
+      <button class="btn-confirm not-ready" onclick="sendPrompt('Como o sistema deve tratar itens não lidos ao confirmar o recebimento?')">
+        <i class="ti ti-lock" style="font-size:14px" aria-hidden="true"></i>Pendente — 1 item não lido
+      </button>
+    </div>
+  </div>
+
+  <div class="detail-panel">
+    <div class="panel-card">
+      <div class="panel-title"><i class="ti ti-info-circle" aria-hidden="true"></i>NF-041823 — status atual</div>
+      <div class="info-row"><span class="info-label">Fornecedor</span><span class="info-val">Grupo Alfa Distribuidora</span></div>
+      <div class="info-row"><span class="info-label">Itens distintos</span><span class="info-val">3 SKUs</span></div>
+      <div class="info-row"><span class="info-label">Total esperado</span><span class="info-val">60 un.</span></div>
+      <div class="info-row"><span class="info-label">Total lido</span><span class="info-val">44 un.</span></div>
+      <div class="info-row"><span class="info-label">Divergências</span><span class="info-val" style="color:var(--color-text-warning)">1 item (−4 un.)</span></div>
+      <div class="info-row"><span class="info-label">Operador</span><span class="info-val">João M.</span></div>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-title"><i class="ti ti-history" aria-hidden="true"></i>Log de leituras</div>
+      <div class="log-item">
+        <span class="log-time">09:12</span>
+        <i class="ti ti-check log-ok" aria-hidden="true"></i>
+        <span>SKU-00821 lido<span class="badge-sm b-ok">24/24 OK</span><span class="badge-sm b-code">EAN</span></span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">09:10</span>
+        <i class="ti ti-alert-triangle log-div" aria-hidden="true"></i>
+        <span>SKU-00344 lido<span class="badge-sm b-div">20/24 div.</span><span class="badge-sm b-code">EAN</span></span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">09:08</span>
+        <i class="ti ti-scan" style="color:var(--color-text-tertiary)" aria-hidden="true"></i>
+        <span style="color:var(--color-text-tertiary)">Sessão iniciada — câmera ativa</span>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>Como funciona o scan</strong><br>
+      Cada leitura incrementa a contagem do SKU. Ao atingir a quantidade da NF, o item fecha automaticamente como OK. Se o scan ultrapassar a quantidade esperada, o sistema alerta sobre excesso. Itens não encontrados na NF podem ser adicionados manualmente e geram ocorrência automática.
+    </div>
+  </div>
+</div>

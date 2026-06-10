@@ -1,0 +1,74 @@
+<div class="overflow-x-auto">
+    <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="bg-slate-50/80 text-slate-500 uppercase text-xs font-semibold tracking-wider">
+            <tr>
+                <th scope="col" class="px-6 py-4 rounded-tl-xl">Empresa</th>
+                <th scope="col" class="px-6 py-4">Status</th>
+                <th scope="col" class="px-6 py-4">Segmento</th>
+                <th scope="col" class="px-6 py-4">Contato</th>
+                <th scope="col" class="px-6 py-4 text-right rounded-tr-xl">Ações</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100/50 bg-white">
+            {% for cliente in clientes %}
+            <tr class="hover:bg-slate-50/50 transition-colors group">
+                <td class="px-6 py-4 font-medium text-slate-800 flex items-center gap-3">
+                    <div class="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold border border-brand-200 shadow-sm">
+                        {{ cliente.razao_social|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <div class="text-slate-800">{{ cliente.razao_social }}</div>
+                        <div class="text-slate-500 text-xs font-mono">{{ cliente.cnpj }}</div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    {% if cliente.status == 'ativo' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                            Ativo
+                        </span>
+                    {% elif cliente.status == 'lead' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                            <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+                            Lead
+                        </span>
+                    {% elif cliente.status == 'inativo' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                            Inativo
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+                            Bloqueado
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 text-slate-600">
+                    <span class="px-2.5 py-1 bg-slate-100 rounded-md text-xs font-medium">{{ cliente.get_segmento_display }}</span>
+                </td>
+                <td class="px-6 py-4 text-slate-600">
+                    <div class="flex flex-col">
+                        <span>{{ cliente.email_principal|default:"-" }}</span>
+                        <span class="text-xs">{{ cliente.telefone|default:"-" }}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button class="text-slate-400 hover:text-brand-600 transition-colors opacity-0 group-hover:opacity-100">
+                        <i class="ti ti-dots-vertical"></i>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                    <div class="flex flex-col items-center justify-center gap-3">
+                        <div class="h-12 w-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                            <i class="ti ti-building text-2xl"></i>
+                        </div>
+                        <p>Nenhum cliente/lead encontrado.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,66 @@
+[
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.veiculo.ver",             "modulo": "tms", "acao": "veiculo.ver",             "descricao": "Visualizar veículos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.veiculo.criar",           "modulo": "tms", "acao": "veiculo.criar",           "descricao": "Cadastrar veículos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.veiculo.editar",          "modulo": "tms", "acao": "veiculo.editar",          "descricao": "Editar veículos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.motorista.ver",           "modulo": "tms", "acao": "motorista.ver",           "descricao": "Visualizar motoristas" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.motorista.criar",         "modulo": "tms", "acao": "motorista.criar",         "descricao": "Cadastrar motoristas" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.motorista.editar",        "modulo": "tms", "acao": "motorista.editar",        "descricao": "Editar motoristas" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.romaneio.ver",            "modulo": "tms", "acao": "romaneio.ver",            "descricao": "Visualizar romaneios" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.romaneio.criar",          "modulo": "tms", "acao": "romaneio.criar",          "descricao": "Criar romaneios" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.romaneio.editar",         "modulo": "tms", "acao": "romaneio.editar",         "descricao": "Editar romaneios" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.romaneio.iniciar_rota",   "modulo": "tms", "acao": "romaneio.iniciar_rota",   "descricao": "Iniciar rota de um romaneio" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.romaneio.concluir",       "modulo": "tms", "acao": "romaneio.concluir",       "descricao": "Concluir romaneio" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.romaneio.cancelar",       "modulo": "tms", "acao": "romaneio.cancelar",       "descricao": "Cancelar romaneio" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.ocorrencia.ver",          "modulo": "tms", "acao": "ocorrencia.ver",          "descricao": "Visualizar ocorrências" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.ocorrencia.criar",        "modulo": "tms", "acao": "ocorrencia.criar",        "descricao": "Registrar ocorrências em trânsito" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.pod.ver",                 "modulo": "tms", "acao": "pod.ver",                 "descricao": "Visualizar comprovantes de entrega (POD)" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "tms.pod.criar",               "modulo": "tms", "acao": "pod.criar",               "descricao": "Registrar comprovante de entrega (POD)" }
+  }
+]

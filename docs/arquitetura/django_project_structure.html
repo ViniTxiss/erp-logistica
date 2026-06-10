@@ -1,0 +1,118 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-size:13px;color:var(--color-text-primary);display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.panel-header{padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px;font-weight:500;background:var(--color-background-secondary);display:flex;align-items:center;gap:7px;color:var(--color-text-primary)}
+.panel-header i{font-size:15px;color:var(--color-text-secondary)}
+.tree{padding:12px 14px;font-family:var(--font-mono);font-size:12px;line-height:1.9;color:var(--color-text-primary)}
+.d{color:var(--color-text-secondary)}
+.f{color:var(--color-text-primary)}
+.cm{color:var(--color-text-tertiary);font-family:var(--font-sans);font-size:11px}
+.app-tag{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;font-family:var(--font-sans)}
+.tag-core{background:#E6F1FB;color:#0C447C}
+.tag-wms{background:#E1F5EE;color:#085041}
+.tag-tms{background:#EEEDFE;color:#3C3489}
+.tag-crm{background:#FAEEDA;color:#633806}
+.tag-cfg{background:#F1EFE8;color:#444441}
+.legend{padding:10px 14px;border-top:0.5px solid var(--color-border-tertiary);display:flex;flex-wrap:wrap;gap:6px}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-secondary)}
+@media(prefers-color-scheme:dark){
+  .tag-core{background:#0C447C;color:#B5D4F4}
+  .tag-wms{background:#085041;color:#9FE1CB}
+  .tag-tms{background:#3C3489;color:#CECBF6}
+  .tag-crm{background:#633806;color:#FAC775}
+  .tag-cfg{background:#444441;color:#D3D1C7}
+}
+</style>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="panel-header"><i class="ti ti-folder" aria-hidden="true"></i>Estrutura de pastas</div>
+    <div class="tree">
+<span class="d">formuca/</span>                  <span class="cm">← projeto raiz</span>
+<span class="d">├── config/</span>                <span class="cm">← settings por ambiente</span>
+<span class="f">│   ├── settings/</span>
+<span class="f">│   │   ├── base.py</span>
+<span class="f">│   │   ├── development.py</span>
+<span class="f">│   │   └── production.py</span>
+<span class="f">│   ├── urls.py</span>
+<span class="f">│   ├── wsgi.py</span>
+<span class="f">│   └── celery.py</span>
+<span class="d">├── apps/</span>                  <span class="cm">← todos os módulos aqui</span>
+<span class="f">│   ├── core/<span class="app-tag tag-core">core</span></span>
+<span class="f">│   │   ├── models.py</span>      <span class="cm">← Empresa, Filial, Usuário</span>
+<span class="f">│   │   ├── views.py</span>
+<span class="f">│   │   ├── serializers.py</span>
+<span class="f">│   │   ├── permissions.py</span> <span class="cm">← RBAC</span>
+<span class="f">│   │   └── audit.py</span>       <span class="cm">← AuditLog middleware</span>
+<span class="f">│   ├── wms/<span class="app-tag tag-wms">wms</span></span>
+<span class="f">│   │   ├── models.py</span>      <span class="cm">← Armazém, Posição, Entrada</span>
+<span class="f">│   │   ├── views.py</span>
+<span class="f">│   │   ├── serializers.py</span>
+<span class="f">│   │   └── tasks.py</span>       <span class="cm">← Celery: alertas, inventário</span>
+<span class="f">│   ├── tms/<span class="app-tag tag-tms">tms</span></span>
+<span class="f">│   │   ├── models.py</span>      <span class="cm">← Romaneio, Veículo, Ocorrência</span>
+<span class="f">│   │   ├── views.py</span>
+<span class="f">│   │   └── tasks.py</span>       <span class="cm">← Celery: status entregas</span>
+<span class="f">│   └── crm/<span class="app-tag tag-crm">crm</span></span>
+<span class="f">│       ├── models.py</span>      <span class="cm">← Cliente, Contrato, SLA</span>
+<span class="f">│       └── views.py</span>
+<span class="d">├── static/</span>
+<span class="d">├── media/</span>
+<span class="f">├── manage.py</span>
+<span class="f">├── requirements/</span>
+<span class="f">│   ├── base.txt</span>
+<span class="f">│   ├── dev.txt</span>
+<span class="f">│   └── prod.txt</span>
+<span class="f">├── .env.example</span>
+<span class="f">├── Procfile</span>               <span class="cm">← Railway / Heroku</span>
+<span class="f">└── docker-compose.yml</span>     <span class="cm">← dev local</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><i class="ti ti-file-code" aria-hidden="true"></i>Arquivos críticos</div>
+    <div class="tree">
+<span class="cm">── config/settings/base.py</span>
+<span class="f">INSTALLED_APPS = [</span>
+<span class="f">  "apps.core",</span>
+<span class="f">  "apps.wms",</span>
+<span class="f">  "apps.tms",</span>
+<span class="f">  "apps.crm",</span>
+<span class="f">  "rest_framework",</span>
+<span class="f">  "corsheaders",</span>
+<span class="f">  "django_celery_beat",</span>
+<span class="f">]</span>
+<span class="f">AUTH_USER_MODEL = "core.Usuario"</span>
+
+<span class="cm">── config/celery.py</span>
+<span class="f">app = Celery("formuca")</span>
+<span class="f">app.config_from_object(</span>
+<span class="f">  "django.conf:settings",</span>
+<span class="f">  namespace="CELERY"</span>
+<span class="f">)</span>
+<span class="f">app.autodiscover_tasks()</span>
+
+<span class="cm">── config/urls.py</span>
+<span class="f">urlpatterns = [</span>
+<span class="f">  path("api/core/",  include("apps.core.urls")),</span>
+<span class="f">  path("api/wms/",   include("apps.wms.urls")),</span>
+<span class="f">  path("api/tms/",   include("apps.tms.urls")),</span>
+<span class="f">  path("api/crm/",   include("apps.crm.urls")),</span>
+<span class="f">  path("api/auth/",  include("rest_framework.urls")),</span>
+<span class="f">]</span>
+
+<span class="cm">── Procfile (Railway)</span>
+<span class="f">web: gunicorn config.wsgi</span>
+<span class="f">worker: celery -A config worker -l info</span>
+<span class="f">beat: celery -A config beat -l info</span>
+    </div>
+    <div class="legend">
+      <span class="leg-item"><span class="app-tag tag-core">core</span>Fundação</span>
+      <span class="leg-item"><span class="app-tag tag-wms">wms</span>Armazém</span>
+      <span class="leg-item"><span class="app-tag tag-tms">tms</span>Transporte</span>
+      <span class="leg-item"><span class="app-tag tag-crm">crm</span>Clientes</span>
+    </div>
+  </div>
+</div>

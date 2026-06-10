@@ -1,0 +1,76 @@
+<div class="overflow-x-auto">
+    <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="bg-slate-50/80 text-slate-500 uppercase text-xs font-semibold tracking-wider">
+            <tr>
+                <th scope="col" class="px-6 py-4 rounded-tl-xl">Número</th>
+                <th scope="col" class="px-6 py-4">Status</th>
+                <th scope="col" class="px-6 py-4">Veículo/Motorista</th>
+                <th scope="col" class="px-6 py-4">Data Criação</th>
+                <th scope="col" class="px-6 py-4 text-right rounded-tr-xl">Ações</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100/50 bg-white">
+            {% for romaneio in romaneios %}
+            <tr class="hover:bg-slate-50/50 transition-colors group">
+                <td class="px-6 py-4 font-medium text-slate-800">
+                    <a href="#" class="text-brand-600 hover:text-brand-800 hover:underline">
+                        {{ romaneio.numero }}
+                    </a>
+                </td>
+                <td class="px-6 py-4">
+                    {% if romaneio.status == 'aberto' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                            Aberto
+                        </span>
+                    {% elif romaneio.status == 'em_rota' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                            <i class="ti ti-truck text-blue-500"></i>
+                            Em Rota
+                        </span>
+                    {% elif romaneio.status == 'concluido' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <i class="ti ti-check text-emerald-500"></i>
+                            Concluído
+                        </span>
+                    {% elif romaneio.status == 'com_ocorrencia' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+                            <i class="ti ti-alert-triangle text-rose-500"></i>
+                            Com Ocorrência
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                            Cancelado
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-col">
+                        <span class="text-slate-800 font-medium">{{ romaneio.veiculo.placa|default:"Sem veículo" }}</span>
+                        <span class="text-slate-500 text-xs">{{ romaneio.motorista.nome_completo|default:"Sem motorista" }}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-slate-600 text-sm">
+                    {{ romaneio.created_at|date:"d/m/Y H:i" }}
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button class="text-slate-400 hover:text-brand-600 transition-colors opacity-0 group-hover:opacity-100">
+                        <i class="ti ti-dots-vertical"></i>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                    <div class="flex flex-col items-center justify-center gap-3">
+                        <div class="h-12 w-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                            <i class="ti ti-route text-2xl"></i>
+                        </div>
+                        <p>Nenhum romaneio encontrado.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

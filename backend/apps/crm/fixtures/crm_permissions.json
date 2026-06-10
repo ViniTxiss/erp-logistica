@@ -1,0 +1,66 @@
+[
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.cliente.ver",                "modulo": "crm", "acao": "cliente.ver",                "descricao": "Visualizar clientes" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.cliente.criar",              "modulo": "crm", "acao": "cliente.criar",              "descricao": "Cadastrar clientes" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.cliente.editar",             "modulo": "crm", "acao": "cliente.editar",             "descricao": "Editar clientes" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.contato.ver",                "modulo": "crm", "acao": "contato.ver",                "descricao": "Visualizar contatos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.contato.criar",              "modulo": "crm", "acao": "contato.criar",              "descricao": "Cadastrar contatos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.contato.editar",             "modulo": "crm", "acao": "contato.editar",             "descricao": "Editar contatos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.oportunidade.ver",           "modulo": "crm", "acao": "oportunidade.ver",           "descricao": "Visualizar oportunidades" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.oportunidade.criar",         "modulo": "crm", "acao": "oportunidade.criar",         "descricao": "Criar oportunidades" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.oportunidade.editar",        "modulo": "crm", "acao": "oportunidade.editar",        "descricao": "Editar oportunidades" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.oportunidade.fechar_ganho",  "modulo": "crm", "acao": "oportunidade.fechar_ganho",  "descricao": "Fechar oportunidade como ganha" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.oportunidade.fechar_perdido","modulo": "crm", "acao": "oportunidade.fechar_perdido","descricao": "Fechar oportunidade como perdida" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.historico.ver",              "modulo": "crm", "acao": "historico.ver",              "descricao": "Visualizar histórico de interações" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.historico.criar",            "modulo": "crm", "acao": "historico.criar",            "descricao": "Registrar interações no histórico" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.contrato.ver",               "modulo": "crm", "acao": "contrato.ver",               "descricao": "Visualizar contratos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.contrato.criar",             "modulo": "crm", "acao": "contrato.criar",             "descricao": "Cadastrar contratos" }
+  },
+  {
+    "model": "core.permissao",
+    "fields": { "codigo": "crm.contrato.editar",            "modulo": "crm", "acao": "contrato.editar",            "descricao": "Editar contratos" }
+  }
+]

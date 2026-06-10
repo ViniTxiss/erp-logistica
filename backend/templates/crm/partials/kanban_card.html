@@ -1,0 +1,25 @@
+<div class="kanban-card bg-white p-4 rounded-xl border border-slate-100 shadow-sm border-l-4 {{ color }} cursor-pointer relative group">
+    <div class="flex justify-between items-start mb-2">
+        <h4 class="font-semibold text-slate-800 text-sm leading-snug pr-4">{{ op.titulo }}</h4>
+        <button class="text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2">
+            <i class="ti ti-dots"></i>
+        </button>
+    </div>
+    <div class="text-xs text-slate-500 mb-3 flex items-center gap-1.5">
+        <i class="ti ti-building text-slate-400"></i>
+        {{ op.cliente.razao_social|truncatechars:25 }}
+    </div>
+    
+    <div class="flex items-center justify-between mt-auto">
+        <div class="flex flex-col">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-0.5">Serviço</span>
+            <span class="text-xs font-medium text-slate-700 bg-slate-50 px-2 py-0.5 rounded">{{ op.get_servico_display }}</span>
+        </div>
+        {% if op.valor_estimado %}
+        <div class="text-right flex flex-col">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-0.5">Mensal</span>
+            <span class="text-xs font-bold text-emerald-600">R$ {{ op.valor_estimado }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>

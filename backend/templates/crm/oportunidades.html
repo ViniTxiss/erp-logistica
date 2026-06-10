@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}CRM - Oportunidades{% endblock %}
+
+{% block content %}
+<div class="mb-8" x-data="{ openForm: false }">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Oportunidades</h1>
+            <p class="text-slate-500 mt-1">Funil de vendas (Kanban).</p>
+        </div>
+        <button @click="openForm = !openForm" class="mt-4 sm:mt-0 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-4 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 flex items-center gap-2">
+            <i class="ti ti-plus"></i>
+            <span x-text="openForm ? 'Cancelar' : 'Nova Oportunidade'"></span>
+        </button>
+    </div>
+
+    <!-- Inline Form -->
+    <div x-show="openForm" x-collapse x-cloak class="mb-8 bg-white p-6 rounded-2xl shadow-soft border border-slate-100 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full filter blur-[80px] opacity-60 -z-10 pointer-events-none"></div>
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">Criar Nova Oportunidade</h2>
+        <form hx-post="{% url 'crm_ui:oportunidade_criar' %}" hx-target="#kanban-board" @submit="setTimeout(() => openForm = false, 100)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% csrf_token %}
+            <div class="lg:col-span-2">
+                <label for="titulo" class="block text-sm font-medium text-slate-700 mb-1">Título da Oportunidade</label>
+                <input type="text" name="titulo" id="titulo" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="Ex: Projeto Armazenagem 1000 posições">
+            </div>
+            <div class="lg:col-span-2">
+                <label for="cliente_id" class="block text-sm font-medium text-slate-700 mb-1">Cliente</label>
+                <select name="cliente_id" id="cliente_id" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border bg-white">
+                    <option value="">Selecione um cliente...</option>
+                    {% for c in clientes %}
+                    <option value="{{ c.id }}">{{ c.razao_social }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="lg:col-span-2">
+                <label for="servico" class="block text-sm font-medium text-slate-700 mb-1">Serviço de Interesse</label>
+                <select name="servico" id="servico" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border bg-white">
+                    <option value="frete">Frete</option>
+                    <option value="armazenagem">Armazenagem</option>
+                    <option value="ambos">Armazenagem + Frete</option>
+                </select>
+            </div>
+            <div class="lg:col-span-2">
+                <label for="valor_estimado" class="block text-sm font-medium text-slate-700 mb-1">Valor Estimado Mensal (R$)</label>
+                <input type="number" step="0.01" name="valor_estimado" id="valor_estimado" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="0.00">
+            </div>
+            <div class="lg:col-span-4 flex justify-end mt-2">
+                <button type="submit" class="bg-brand-900 hover:bg-slate-850 text-white font-medium py-2.5 px-6 rounded-xl shadow-soft transition-all duration-300 flex items-center gap-2">
+                    <i class="ti ti-device-floppy"></i>
+                    Criar no Funil
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Kanban Board -->
+    <div id="kanban-board" class="h-[70vh] flex gap-6 overflow-x-auto pb-4">
+        {% include 'crm/partials/kanban_oportunidades.html' %}
+    </div>
+</div>
+
+<style>
+/* Drag and Drop styles could go here, for now it's a visual layout */
+.kanban-column { min-width: 300px; max-width: 300px; }
+.kanban-card { transition: transform 0.2s, box-shadow 0.2s; }
+.kanban-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+</style>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}TMS - Romaneios{% endblock %}
+
+{% block content %}
+<div class="mb-8" x-data="{ openForm: false }">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Romaneios</h1>
+            <p class="text-slate-500 mt-1">Gestão de rotas e expedições de transporte.</p>
+        </div>
+        <button @click="openForm = !openForm" class="mt-4 sm:mt-0 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-4 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 flex items-center gap-2">
+            <i class="ti ti-plus"></i>
+            <span x-text="openForm ? 'Cancelar' : 'Novo Romaneio'"></span>
+        </button>
+    </div>
+
+    <!-- Inline Form -->
+    <div x-show="openForm" x-collapse x-cloak class="mb-8 bg-white p-6 rounded-2xl shadow-soft border border-slate-100 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full filter blur-[80px] opacity-60 -z-10 pointer-events-none"></div>
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">Criar Novo Romaneio</h2>
+        <form hx-post="{% url 'tms_ui:romaneio_criar' %}" hx-target="#tabela-romaneios" @submit="setTimeout(() => openForm = false, 100)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% csrf_token %}
+            <div>
+                <label for="numero" class="block text-sm font-medium text-slate-700 mb-1">Nº do Romaneio</label>
+                <input type="text" name="numero" id="numero" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="Ex: ROM-2026-001">
+            </div>
+            <div>
+                <label for="veiculo_id" class="block text-sm font-medium text-slate-700 mb-1">Veículo (Opcional)</label>
+                <select name="veiculo_id" id="veiculo_id" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border bg-white">
+                    <option value="">Selecione um veículo...</option>
+                    {% for v in veiculos %}
+                    <option value="{{ v.id }}">{{ v.placa }} - {{ v.modelo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="motorista_id" class="block text-sm font-medium text-slate-700 mb-1">Motorista (Opcional)</label>
+                <select name="motorista_id" id="motorista_id" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border bg-white">
+                    <option value="">Selecione um motorista...</option>
+                    {% for m in motoristas %}
+                    <option value="{{ m.id }}">{{ m.nome_completo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="previsao_saida" class="block text-sm font-medium text-slate-700 mb-1">Previsão de Saída (Opcional)</label>
+                <input type="datetime-local" name="previsao_saida" id="previsao_saida" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border">
+            </div>
+            
+            <div class="lg:col-span-4 flex justify-end mt-2">
+                <button type="submit" class="bg-brand-900 hover:bg-slate-850 text-white font-medium py-2.5 px-6 rounded-xl shadow-soft transition-all duration-300 flex items-center gap-2">
+                    <i class="ti ti-route"></i>
+                    Gerar Romaneio
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filters & Table -->
+    <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden relative">
+        <!-- Decorator -->
+        <div class="absolute -top-40 -left-40 w-80 h-80 bg-violet-50 rounded-full filter blur-[100px] opacity-70 pointer-events-none"></div>
+
+        <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 z-10 relative bg-white/50 backdrop-blur-sm">
+            <div class="relative max-w-sm w-full">
+                <i class="ti ti-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                <input type="text" name="q" placeholder="Buscar por número..."
+                    class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all text-sm outline-none"
+                    hx-get="{% url 'tms_ui:romaneios_list' %}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-include="[name='status']"
+                    hx-target="#tabela-romaneios">
+            </div>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <select name="status" class="w-full sm:w-48 bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 py-2 pl-3 pr-8 outline-none transition-all"
+                    hx-get="{% url 'tms_ui:romaneios_list' %}"
+                    hx-include="[name='q']"
+                    hx-target="#tabela-romaneios">
+                    <option value="Todos">Todos os status</option>
+                    <option value="Aberto">Aberto</option>
+                    <option value="Em Rota">Em Rota</option>
+                    <option value="Concluído">Concluído</option>
+                    <option value="Com Ocorrência">Com Ocorrência</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="tabela-romaneios" class="relative z-10">
+            {% include 'tms/partials/tabela_romaneios.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

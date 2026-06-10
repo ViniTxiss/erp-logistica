@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}CRM - Clientes{% endblock %}
+
+{% block content %}
+<div class="mb-8" x-data="{ openForm: false }">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Clientes</h1>
+            <p class="text-slate-500 mt-1">Gestão de contatos e contas (Leads e Ativos).</p>
+        </div>
+        <button @click="openForm = !openForm" class="mt-4 sm:mt-0 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-4 rounded-xl shadow-soft hover:shadow-glow transition-all duration-300 flex items-center gap-2">
+            <i class="ti ti-plus"></i>
+            <span x-text="openForm ? 'Cancelar' : 'Novo Cliente'"></span>
+        </button>
+    </div>
+
+    <!-- Inline Form -->
+    <div x-show="openForm" x-collapse x-cloak class="mb-8 bg-white p-6 rounded-2xl shadow-soft border border-slate-100 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full filter blur-[80px] opacity-60 -z-10 pointer-events-none"></div>
+        <h2 class="text-lg font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">Cadastrar Novo Cliente (Lead)</h2>
+        <form hx-post="{% url 'crm_ui:cliente_criar' %}" hx-target="#tabela-clientes" @submit="setTimeout(() => openForm = false, 100)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% csrf_token %}
+            <div>
+                <label for="razao_social" class="block text-sm font-medium text-slate-700 mb-1">Razão Social</label>
+                <input type="text" name="razao_social" id="razao_social" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="Nome da empresa">
+            </div>
+            <div>
+                <label for="cnpj" class="block text-sm font-medium text-slate-700 mb-1">CNPJ</label>
+                <input type="text" name="cnpj" id="cnpj" required class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="00.000.000/0000-00">
+            </div>
+            <div>
+                <label for="segmento" class="block text-sm font-medium text-slate-700 mb-1">Segmento</label>
+                <select name="segmento" id="segmento" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border bg-white">
+                    <option value="industria">Indústria</option>
+                    <option value="varejo">Varejo</option>
+                    <option value="distribuicao">Distribuição</option>
+                    <option value="ecommerce">E-commerce</option>
+                    <option value="agronegocio">Agronegócio</option>
+                    <option value="saude">Saúde</option>
+                    <option value="outro" selected>Outro</option>
+                </select>
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium text-slate-700 mb-1">E-mail Principal</label>
+                <input type="email" name="email" id="email" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="contato@empresa.com">
+            </div>
+            <div>
+                <label for="telefone" class="block text-sm font-medium text-slate-700 mb-1">Telefone</label>
+                <input type="text" name="telefone" id="telefone" class="w-full rounded-xl border-slate-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-sm px-4 py-2.5 transition-all outline-none border" placeholder="(00) 0000-0000">
+            </div>
+            <div class="lg:col-span-3 flex justify-end mt-2">
+                <button type="submit" class="bg-brand-900 hover:bg-slate-850 text-white font-medium py-2.5 px-6 rounded-xl shadow-soft transition-all duration-300 flex items-center gap-2">
+                    <i class="ti ti-device-floppy"></i>
+                    Salvar Lead
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filters & Table -->
+    <div class="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden relative">
+        <div class="absolute -top-40 -left-40 w-80 h-80 bg-violet-50 rounded-full filter blur-[100px] opacity-70 pointer-events-none"></div>
+
+        <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 z-10 relative bg-white/50 backdrop-blur-sm">
+            <div class="relative max-w-sm w-full">
+                <i class="ti ti-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                <input type="text" name="q" placeholder="Buscar por razão social..."
+                    class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all text-sm outline-none"
+                    hx-get="{% url 'crm_ui:clientes_list' %}"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-include="[name='status']"
+                    hx-target="#tabela-clientes">
+            </div>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <select name="status" class="w-full sm:w-48 bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 py-2 pl-3 pr-8 outline-none transition-all"
+                    hx-get="{% url 'crm_ui:clientes_list' %}"
+                    hx-include="[name='q']"
+                    hx-target="#tabela-clientes">
+                    <option value="Todos">Todos os status</option>
+                    <option value="Lead">Lead</option>
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                    <option value="Bloqueado">Bloqueado</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="tabela-clientes" class="relative z-10">
+            {% include 'crm/partials/tabela_clientes.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

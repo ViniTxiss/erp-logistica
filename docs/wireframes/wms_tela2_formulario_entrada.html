@@ -1,0 +1,178 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.shell{display:flex;min-height:700px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;font-size:13px;color:var(--color-text-primary)}
+.sidebar{width:200px;flex-shrink:0;background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column}
+.sb-logo{padding:16px;font-weight:500;font-size:14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.sb-section{padding:12px 8px 4px;font-size:11px;color:var(--color-text-tertiary);letter-spacing:.04em}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--border-radius-md);margin:1px 6px;cursor:pointer;color:var(--color-text-secondary);font-size:13px}
+.sb-item i{font-size:16px;flex-shrink:0}
+.sb-item.active{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500;border:0.5px solid var(--color-border-tertiary)}
+.sb-user{margin-top:auto;padding:12px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--color-background-info);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-info);flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;background:var(--color-background-tertiary);min-width:0}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:12px 20px;display:flex;align-items:center;gap:10px}
+.breadcrumb{font-size:12px;color:var(--color-text-tertiary)}
+.breadcrumb span{color:var(--color-text-primary);font-weight:500}
+.content{padding:16px 20px;flex:1;overflow:auto}
+.section-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:12px}
+.sec-title{font-size:13px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:7px;color:var(--color-text-primary)}
+.sec-title i{font-size:16px;color:var(--color-text-secondary)}
+.form-grid{display:grid;gap:10px 14px}
+.form-grid-2{grid-template-columns:1fr 1fr}
+.form-grid-3{grid-template-columns:1fr 1fr 1fr}
+.field label{display:block;font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;padding:7px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);font-size:13px;color:var(--color-text-primary)}
+.field input[readonly]{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.items-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.items-table th{padding:8px 10px;text-align:left;font-size:11px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.items-table td{padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;vertical-align:middle}
+.items-table tr:last-child td{border-bottom:none}
+.qty-input{width:70px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;text-align:center;background:var(--color-background-primary);color:var(--color-text-primary)}
+.pos-input{width:90px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:12px;font-family:var(--font-mono);background:var(--color-background-primary);color:var(--color-text-primary)}
+.ok-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 7px;border-radius:20px;background:#E1F5EE;color:#085041;font-weight:500}
+.warn-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 7px;border-radius:20px;background:#FAEEDA;color:#633806;font-weight:500}
+.add-row{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;color:var(--color-text-tertiary);cursor:pointer;border-top:0.5px solid var(--color-border-tertiary)}
+.add-row:hover{color:var(--color-text-secondary)}
+.footer-bar{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.btn-ghost{background:transparent;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px 14px;font-size:13px;cursor:pointer;color:var(--color-text-secondary)}
+.btn-primary{background:var(--color-text-primary);color:var(--color-background-primary);border:none;border-radius:var(--border-radius-md);padding:7px 16px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.step-dots{display:flex;gap:6px;align-items:center}
+.dot-step{width:7px;height:7px;border-radius:50%;background:var(--color-border-secondary)}
+.dot-step.on{background:var(--color-text-primary)}
+@media(prefers-color-scheme:dark){
+  .ok-badge{background:#085041;color:#9FE1CB}
+  .warn-badge{background:#633806;color:#FAC775}
+}
+</style>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sb-logo"><i class="ti ti-package" style="font-size:18px;vertical-align:-3px;margin-right:6px" aria-hidden="true"></i>Formuca</div>
+    <div class="sb-section">Armazém</div>
+    <div class="sb-item active"><i class="ti ti-arrow-down-circle" aria-hidden="true"></i>Recebimento</div>
+    <div class="sb-item"><i class="ti ti-arrow-up-circle" aria-hidden="true"></i>Expedição</div>
+    <div class="sb-item"><i class="ti ti-layout-grid" aria-hidden="true"></i>Posições</div>
+    <div class="sb-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>Inventário</div>
+    <div class="sb-section">Transporte</div>
+    <div class="sb-item"><i class="ti ti-file-text" aria-hidden="true"></i>Romaneios</div>
+    <div class="sb-item"><i class="ti ti-truck" aria-hidden="true"></i>Transportadoras</div>
+    <div class="sb-section">Clientes</div>
+    <div class="sb-item"><i class="ti ti-users" aria-hidden="true"></i>Clientes</div>
+    <div class="sb-user">
+      <div class="avatar">JM</div>
+      <div>
+        <div style="font-size:12px;font-weight:500">João M.</div>
+        <div style="font-size:11px;color:var(--color-text-tertiary)">Operador WMS</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <i class="ti ti-arrow-left" style="font-size:16px;color:var(--color-text-secondary);cursor:pointer" aria-hidden="true"></i>
+      <div class="breadcrumb">Recebimento <i class="ti ti-chevron-right" style="font-size:12px;vertical-align:-1px" aria-hidden="true"></i> <span>Nova entrada</span></div>
+      <div class="step-dots" style="margin-left:auto">
+        <span style="font-size:11px;color:var(--color-text-tertiary);margin-right:4px">Passo 1 de 2</span>
+        <div class="dot-step on"></div>
+        <div class="dot-step"></div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="section-card">
+        <div class="sec-title"><i class="ti ti-file-invoice" aria-hidden="true"></i>Dados do documento</div>
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label>Número da NF</label>
+            <input type="text" placeholder="Ex: 041823" value="041823">
+          </div>
+          <div class="field">
+            <label>Chave NF-e</label>
+            <input type="text" placeholder="44 dígitos" style="font-size:11px;font-family:var(--font-mono)">
+          </div>
+          <div class="field">
+            <label>Data de emissão</label>
+            <input type="date" value="2026-06-04">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="sec-title"><i class="ti ti-building-store" aria-hidden="true"></i>Fornecedor</div>
+        <div class="form-grid form-grid-2">
+          <div class="field">
+            <label>Fornecedor</label>
+            <input type="text" value="Grupo Alfa Distribuidora" placeholder="Buscar fornecedor…">
+          </div>
+          <div class="field">
+            <label>CNPJ</label>
+            <input type="text" value="12.345.678/0001-99" readonly>
+          </div>
+          <div class="field">
+            <label>Transportadora</label>
+            <select><option>Jadlog</option><option>Correios</option><option>TNT</option></select>
+          </div>
+          <div class="field">
+            <label>Placa do veículo</label>
+            <input type="text" placeholder="AAA-0000">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="sec-title"><i class="ti ti-list-check" aria-hidden="true"></i>Itens recebidos</div>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width:44px">#</th>
+              <th>Produto / SKU</th>
+              <th style="width:80px">Qtd. NF</th>
+              <th style="width:80px">Qtd. conf.</th>
+              <th style="width:100px">Posição</th>
+              <th style="width:90px">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--color-text-tertiary);font-size:12px">01</td>
+              <td><div style="font-weight:500">Caixa papelão 40x30</div><div style="font-size:11px;color:var(--color-text-tertiary);font-family:var(--font-mono)">SKU-00821</div></td>
+              <td style="text-align:center">24</td>
+              <td><input class="qty-input" type="number" value="24"></td>
+              <td><input class="pos-input" type="text" value="A-01-03"></td>
+              <td><span class="ok-badge"><i class="ti ti-check" style="font-size:11px" aria-hidden="true"></i>OK</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--color-text-tertiary);font-size:12px">02</td>
+              <td><div style="font-weight:500">Fita adesiva 48mm</div><div style="font-size:11px;color:var(--color-text-tertiary);font-family:var(--font-mono)">SKU-00344</div></td>
+              <td style="text-align:center">24</td>
+              <td><input class="qty-input" type="number" value="20"></td>
+              <td><input class="pos-input" type="text" placeholder="—"></td>
+              <td><span class="warn-badge"><i class="ti ti-alert-triangle" style="font-size:11px" aria-hidden="true"></i>Divergência</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="add-row"><i class="ti ti-plus" style="font-size:14px" aria-hidden="true"></i>Adicionar item</div>
+      </div>
+
+      <div class="section-card">
+        <div class="sec-title"><i class="ti ti-notes" aria-hidden="true"></i>Observações</div>
+        <div class="field">
+          <textarea rows="2" placeholder="Registre avarias, divergências ou observações gerais…" style="resize:none;width:100%"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bar">
+      <button class="btn-ghost">Cancelar</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-ghost">Salvar rascunho</button>
+        <button class="btn-primary" onclick="sendPrompt('Mostra a tela de confirmação da entrada de mercadoria WMS')">
+          Avançar — conferência <i class="ti ti-arrow-right" style="font-size:14px" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

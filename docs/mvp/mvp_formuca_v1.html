@@ -1,0 +1,157 @@
+
+<style>
+.mvp-wrap { padding: 1rem 0; font-size: 14px; color: var(--color-text-primary); }
+.phase { margin-bottom: 2rem; }
+.phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.phase-label { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; letter-spacing: .04em; }
+.pill-v1 { background: #E1F5EE; color: #085041; }
+.pill-v11 { background: #FAEEDA; color: #633806; }
+.pill-future { background: #F1EFE8; color: #444441; }
+.phase-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+.modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.mod-card { border: 1px solid var(--color-border-tertiary); border-radius: 12px; padding: 14px 16px; background: var(--color-background-secondary); }
+.mod-name { font-weight: 500; font-size: 13px; margin-bottom: 8px; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+.mod-tag { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 10px; }
+.tag-core { background: #E6F1FB; color: #0C447C; }
+.tag-ops { background: #EEEDFE; color: #3C3489; }
+.tag-suporte { background: #F1EFE8; color: #444441; }
+.feat-list { list-style: none; margin: 0; padding: 0; }
+.feat-list li { font-size: 12px; color: var(--color-text-secondary); padding: 3px 0; display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
+.feat-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--color-border-primary); margin-top: 5px; flex-shrink: 0; }
+.feat-out { color: var(--color-text-tertiary); text-decoration: line-through; }
+.feat-out::before { background: var(--color-border-tertiary) !important; }
+.divider { border: none; border-top: 1px solid var(--color-border-tertiary); margin: 0 0 1.5rem; }
+.rule-box { border-left: 3px solid #1D9E75; border-radius: 0; padding: 10px 14px; background: #E1F5EE; margin-bottom: 1.5rem; font-size: 12px; color: #085041; line-height: 1.6; }
+.scope-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+.scope-pill { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--color-border-secondary); color: var(--color-text-secondary); }
+@media (prefers-color-scheme: dark) {
+  .pill-v1 { background: #085041; color: #9FE1CB; }
+  .pill-v11 { background: #633806; color: #FAC775; }
+  .pill-future { background: #444441; color: #D3D1C7; }
+  .tag-core { background: #0C447C; color: #B5D4F4; }
+  .tag-ops { background: #3C3489; color: #CECBF6; }
+  .tag-suporte { background: #444441; color: #D3D1C7; }
+  .rule-box { background: #04342C; color: #9FE1CB; border-left-color: #1D9E75; }
+}
+</style>
+
+<div class="mvp-wrap">
+  <div class="rule-box">
+    Critério MVP: a operação trava sem isso? Se sim, entra. Se pode ser feito manualmente por enquanto, fica pra v1.1+.
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-label pill-v1">v1.0 — MVP</span>
+      <span class="phase-title">O que precisa funcionar no dia 1</span>
+    </div>
+    <div class="modules">
+
+      <div class="mod-card">
+        <div class="mod-name"><span>Core / ERP base</span><span class="mod-tag tag-core">fundação</span></div>
+        <ul class="feat-list">
+          <li>Cadastro de empresa e filial</li>
+          <li>Usuários com login e perfis (RBAC)</li>
+          <li>Endereços com consulta de CEP</li>
+          <li>Audit log de ações</li>
+          <li class="feat-out">Multi-tenant completo</li>
+          <li class="feat-out">SSO / login social</li>
+        </ul>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-name"><span>WMS — armazém</span><span class="mod-tag tag-ops">operação</span></div>
+        <ul class="feat-list">
+          <li>Cadastro de armazém e posições (rua / bay / nível)</li>
+          <li>Entrada de mercadorias (recebimento)</li>
+          <li>Saída de mercadorias (expedição)</li>
+          <li>Consulta de saldo por posição</li>
+          <li class="feat-out">Inventário cíclico automatizado</li>
+          <li class="feat-out">Integração RFID</li>
+        </ul>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-name"><span>TMS — transporte</span><span class="mod-tag tag-ops">operação</span></div>
+        <ul class="feat-list">
+          <li>Cadastro de transportadoras e veículos</li>
+          <li>Criação de romaneio / manifesto</li>
+          <li>Registro de ocorrências (avaria, devolução)</li>
+          <li>Confirmação de entrega (POD simples)</li>
+          <li class="feat-out">Rastreamento GPS em tempo real</li>
+          <li class="feat-out">Integração API transportadoras</li>
+        </ul>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-name"><span>CRM — clientes</span><span class="mod-tag tag-ops">operação</span></div>
+        <ul class="feat-list">
+          <li>Cadastro de clientes com endereços</li>
+          <li>Histórico de pedidos e entregas</li>
+          <li class="feat-out">Portal do cliente (self-service)</li>
+          <li class="feat-out">SLA automatizado e alertas</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-label pill-v11">v1.1 — pós-MVP</span>
+      <span class="phase-title">Quando a operação base estiver rodando</span>
+    </div>
+    <div class="modules">
+
+      <div class="mod-card">
+        <div class="mod-name"><span>Roteamento</span><span class="mod-tag tag-ops">operação</span></div>
+        <ul class="feat-list">
+          <li>Otimização de rotas por CEP</li>
+          <li>Sequenciamento de paradas</li>
+          <li>Integração Google Maps / OSRM</li>
+          <li>Estimativa de custo e tempo</li>
+        </ul>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-name"><span>Torre de controle</span><span class="mod-tag tag-ops">operação</span></div>
+        <ul class="feat-list">
+          <li>Dashboard KPIs em tempo real</li>
+          <li>Alertas de atraso e SLA</li>
+          <li>Visão supply chain consolidada</li>
+        </ul>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-name"><span>ERP financeiro</span><span class="mod-tag tag-suporte">suporte</span></div>
+        <ul class="feat-list">
+          <li>Emissão e recepção de NF-e</li>
+          <li>Contas a pagar / receber</li>
+          <li>Fluxo de caixa básico</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-label pill-future">v2.0 — futuro</span>
+      <span class="phase-title">Quando houver tração e equipe</span>
+    </div>
+    <div class="scope-row">
+      <span class="scope-pill">LMS (treinamentos)</span>
+      <span class="scope-pill">Rastreamento GPS ao vivo</span>
+      <span class="scope-pill">Portal do cliente</span>
+      <span class="scope-pill">Integração SEFAZ / NF-e</span>
+      <span class="scope-pill">API pública para parceiros</span>
+      <span class="scope-pill">App mobile coletores</span>
+      <span class="scope-pill">BI / relatórios avançados</span>
+      <span class="scope-pill">Integrações transportadoras</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,6720 @@
+openapi: 3.0.3
+info:
+  title: Formuca ERP API
+  version: 1.0.0
+  description: |-
+    API REST do Formuca ERP — sistema de gestão logística multi-tenant.
+
+    **Módulos disponíveis:**
+    - **Core** — Empresas, Usuários, Perfis, RBAC, AuditLog
+    - **WMS** — Arméns, Produtos, Entradas e Saídas de Mercadoria
+    - **TMS** — Veículos, Motoristas, Romaneios, POD, Ocorrências
+    - **CRM** — Clientes, Oportunidades, Contratos, Histórico
+
+    **Autenticação:** JWT via `Bearer` token. Obtenha o token em `POST /api/token/` com `email` e `password`.
+paths:
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/token/verify/:
+    post:
+      operationId: token_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+        required: true
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/core/empresas/:
+    get:
+      operationId: core_empresas_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmpresaList'
+          description: ''
+    post:
+      operationId: core_empresas_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmpresaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmpresaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+          description: ''
+  /api/core/empresas/{id}/:
+    get:
+      operationId: core_empresas_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this Empresa.
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+          description: ''
+    put:
+      operationId: core_empresas_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this Empresa.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmpresaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmpresaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+          description: ''
+    delete:
+      operationId: core_empresas_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this Empresa.
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: core_empresas_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this Empresa.
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmpresaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmpresaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmpresaRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empresa'
+          description: ''
+  /api/core/filiais/:
+    get:
+      operationId: core_filiais_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFilialList'
+          description: ''
+    post:
+      operationId: core_filiais_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilialRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FilialRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FilialRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filial'
+          description: ''
+  /api/core/filiais/{id}/:
+    get:
+      operationId: core_filiais_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filial'
+          description: ''
+    put:
+      operationId: core_filiais_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilialRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FilialRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FilialRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filial'
+          description: ''
+    delete:
+      operationId: core_filiais_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: core_filiais_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFilialRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFilialRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFilialRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filial'
+          description: ''
+  /api/core/usuarios/:
+    get:
+      operationId: core_usuarios_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsuarioList'
+          description: ''
+    post:
+      operationId: core_usuarios_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioCreate'
+          description: ''
+  /api/core/usuarios/me/:
+    get:
+      operationId: core_usuarios_me_retrieve
+      description: GET /api/core/usuarios/me/ — retorna o usuário autenticado.
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/core/usuarios/{id}/:
+    get:
+      operationId: core_usuarios_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    put:
+      operationId: core_usuarios_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+    delete:
+      operationId: core_usuarios_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: core_usuarios_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUsuarioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/core/usuarios/{id}/ativar/:
+    post:
+      operationId: core_usuarios_ativar_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/core/usuarios/{id}/desativar/:
+    post:
+      operationId: core_usuarios_desativar_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UsuarioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+          description: ''
+  /api/core/perfis/:
+    get:
+      operationId: core_perfis_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPerfilList'
+          description: ''
+    post:
+      operationId: core_perfis_create
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerfilRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PerfilRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerfilRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+  /api/core/perfis/{id}/:
+    get:
+      operationId: core_perfis_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+    put:
+      operationId: core_perfis_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerfilRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PerfilRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerfilRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+    delete:
+      operationId: core_perfis_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: core_perfis_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfilRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfilRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPerfilRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Perfil'
+          description: ''
+  /api/core/permissoes/:
+    get:
+      operationId: core_permissoes_list
+      description: Permissões são somente leitura — criadas via migration/fixtures.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPermissaoList'
+          description: ''
+  /api/core/permissoes/{id}/:
+    get:
+      operationId: core_permissoes_retrieve
+      description: Permissões são somente leitura — criadas via migration/fixtures.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this Permissão.
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Permissao'
+          description: ''
+  /api/core/audit/:
+    get:
+      operationId: core_audit_list
+      description: AuditLog é read-only — nunca editável.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditLogList'
+          description: ''
+  /api/core/audit/{id}/:
+    get:
+      operationId: core_audit_retrieve
+      description: AuditLog é read-only — nunca editável.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - core
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLog'
+          description: ''
+  /api/wms/armazens/:
+    get:
+      operationId: wms_armazens_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedArmazemList'
+          description: ''
+    post:
+      operationId: wms_armazens_create
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArmazemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArmazemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArmazemRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Armazem'
+          description: ''
+  /api/wms/armazens/{id}/:
+    get:
+      operationId: wms_armazens_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Armazem'
+          description: ''
+    put:
+      operationId: wms_armazens_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArmazemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArmazemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArmazemRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Armazem'
+          description: ''
+    delete:
+      operationId: wms_armazens_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: wms_armazens_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedArmazemRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedArmazemRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedArmazemRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Armazem'
+          description: ''
+  /api/wms/posicoes/:
+    get:
+      operationId: wms_posicoes_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPosicaoList'
+          description: ''
+  /api/wms/posicoes/saldo/:
+    get:
+      operationId: wms_posicoes_saldo_retrieve
+      description: |-
+        GET /api/wms/posicoes/saldo/?armazem=<uuid>
+        Retorna saldo atual por posição e produto.
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Posicao'
+          description: ''
+  /api/wms/posicoes/{id}/:
+    get:
+      operationId: wms_posicoes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Posicao'
+          description: ''
+  /api/wms/produtos/:
+    get:
+      operationId: wms_produtos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProdutoList'
+          description: ''
+    post:
+      operationId: wms_produtos_create
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProdutoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProdutoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+          description: ''
+  /api/wms/produtos/{id}/:
+    get:
+      operationId: wms_produtos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+          description: ''
+    put:
+      operationId: wms_produtos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProdutoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProdutoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProdutoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+          description: ''
+    delete:
+      operationId: wms_produtos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: wms_produtos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProdutoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProdutoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProdutoRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Produto'
+          description: ''
+  /api/wms/entradas/:
+    get:
+      operationId: wms_entradas_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEntradaMercadoriaListList'
+          description: ''
+    post:
+      operationId: wms_entradas_create
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaMercadoria'
+          description: ''
+  /api/wms/entradas/{id}/:
+    get:
+      operationId: wms_entradas_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaMercadoria'
+          description: ''
+    put:
+      operationId: wms_entradas_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaMercadoria'
+          description: ''
+    delete:
+      operationId: wms_entradas_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: wms_entradas_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEntradaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEntradaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEntradaMercadoriaRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaMercadoria'
+          description: ''
+  /api/wms/entradas/{id}/concluir/:
+    post:
+      operationId: wms_entradas_concluir_create
+      description: |-
+        POST /api/wms/entradas/<id>/concluir/
+        Conclui o recebimento e gera movimentações de estoque.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaMercadoria'
+          description: ''
+  /api/wms/entradas/{id}/marcar-divergencia/:
+    post:
+      operationId: wms_entradas_marcar_divergencia_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntradaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntradaMercadoria'
+          description: ''
+  /api/wms/saidas/:
+    get:
+      operationId: wms_saidas_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSaidaMercadoriaList'
+          description: ''
+    post:
+      operationId: wms_saidas_create
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaidaMercadoria'
+          description: ''
+  /api/wms/saidas/{id}/:
+    get:
+      operationId: wms_saidas_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaidaMercadoria'
+          description: ''
+    put:
+      operationId: wms_saidas_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaidaMercadoria'
+          description: ''
+    delete:
+      operationId: wms_saidas_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: wms_saidas_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSaidaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSaidaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSaidaMercadoriaRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaidaMercadoria'
+          description: ''
+  /api/wms/saidas/{id}/expedir/:
+    post:
+      operationId: wms_saidas_expedir_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SaidaMercadoriaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaidaMercadoria'
+          description: ''
+  /api/wms/movimentacoes/:
+    get:
+      operationId: wms_movimentacoes_list
+      description: Ledger de movimentações — somente leitura.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMovimentacaoEstoqueList'
+          description: ''
+  /api/wms/movimentacoes/{id}/:
+    get:
+      operationId: wms_movimentacoes_retrieve
+      description: Ledger de movimentações — somente leitura.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - wms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimentacaoEstoque'
+          description: ''
+  /api/tms/veiculos/:
+    get:
+      operationId: tms_veiculos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedVeiculoList'
+          description: ''
+    post:
+      operationId: tms_veiculos_create
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VeiculoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VeiculoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VeiculoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Veiculo'
+          description: ''
+  /api/tms/veiculos/{id}/:
+    get:
+      operationId: tms_veiculos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Veiculo'
+          description: ''
+    put:
+      operationId: tms_veiculos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VeiculoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VeiculoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VeiculoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Veiculo'
+          description: ''
+    delete:
+      operationId: tms_veiculos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: tms_veiculos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedVeiculoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedVeiculoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedVeiculoRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Veiculo'
+          description: ''
+  /api/tms/motoristas/:
+    get:
+      operationId: tms_motoristas_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMotoristaList'
+          description: ''
+    post:
+      operationId: tms_motoristas_create
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MotoristaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MotoristaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MotoristaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Motorista'
+          description: ''
+  /api/tms/motoristas/{id}/:
+    get:
+      operationId: tms_motoristas_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Motorista'
+          description: ''
+    put:
+      operationId: tms_motoristas_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MotoristaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MotoristaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MotoristaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Motorista'
+          description: ''
+    delete:
+      operationId: tms_motoristas_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: tms_motoristas_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMotoristaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMotoristaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMotoristaRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Motorista'
+          description: ''
+  /api/tms/romaneios/:
+    get:
+      operationId: tms_romaneios_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRomaneioListList'
+          description: ''
+    post:
+      operationId: tms_romaneios_create
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+  /api/tms/romaneios/{id}/:
+    get:
+      operationId: tms_romaneios_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+    put:
+      operationId: tms_romaneios_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+    delete:
+      operationId: tms_romaneios_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: tms_romaneios_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+  /api/tms/romaneios/{id}/cancelar/:
+    post:
+      operationId: tms_romaneios_cancelar_create
+      description: |-
+        POST /api/tms/romaneios/<id>/cancelar/
+        Cancela o romaneio.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+  /api/tms/romaneios/{id}/concluir/:
+    post:
+      operationId: tms_romaneios_concluir_create
+      description: |-
+        POST /api/tms/romaneios/<id>/concluir/
+        Conclui o romaneio: em_rota | com_ocorrencia → concluido.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+  /api/tms/romaneios/{id}/iniciar-rota/:
+    post:
+      operationId: tms_romaneios_iniciar_rota_create
+      description: |-
+        POST /api/tms/romaneios/<id>/iniciar-rota/
+        Inicia a rota: status aberto → em_rota.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+  /api/tms/romaneios/{id}/ocorrencias/:
+    get:
+      operationId: tms_romaneios_ocorrencias_retrieve
+      description: |-
+        GET /api/tms/romaneios/<id>/ocorrencias/
+        Lista todas as ocorrências do romaneio.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Romaneio'
+          description: ''
+  /api/tms/itens-romaneio/:
+    get:
+      operationId: tms_itens_romaneio_list
+      description: ViewSet de itens. Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedItemRomaneioList'
+          description: ''
+    post:
+      operationId: tms_itens_romaneio_create
+      description: ViewSet de itens. Filtrar por romaneio via ?romaneio=<uuid>.
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemRomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ItemRomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ItemRomaneioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemRomaneio'
+          description: ''
+  /api/tms/itens-romaneio/{id}/:
+    get:
+      operationId: tms_itens_romaneio_retrieve
+      description: ViewSet de itens. Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemRomaneio'
+          description: ''
+    put:
+      operationId: tms_itens_romaneio_update
+      description: ViewSet de itens. Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemRomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ItemRomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ItemRomaneioRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemRomaneio'
+          description: ''
+    delete:
+      operationId: tms_itens_romaneio_destroy
+      description: ViewSet de itens. Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: tms_itens_romaneio_partial_update
+      description: ViewSet de itens. Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedItemRomaneioRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedItemRomaneioRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedItemRomaneioRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemRomaneio'
+          description: ''
+  /api/tms/ocorrencias/:
+    get:
+      operationId: tms_ocorrencias_list
+      description: |-
+        Criação e leitura de ocorrências.
+        Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOcorrenciaList'
+          description: ''
+    post:
+      operationId: tms_ocorrencias_create
+      description: |-
+        Criação e leitura de ocorrências.
+        Filtrar por romaneio via ?romaneio=<uuid>.
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OcorrenciaRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OcorrenciaRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OcorrenciaRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ocorrencia'
+          description: ''
+  /api/tms/ocorrencias/{id}/:
+    get:
+      operationId: tms_ocorrencias_retrieve
+      description: |-
+        Criação e leitura de ocorrências.
+        Filtrar por romaneio via ?romaneio=<uuid>.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ocorrencia'
+          description: ''
+  /api/tms/pods/:
+    get:
+      operationId: tms_pods_list
+      description: |-
+        Comprovantes de entrega — criação + leitura; sem edição (imutável).
+        Filtrar por item via ?item=<uuid>.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPODList'
+          description: ''
+    post:
+      operationId: tms_pods_create
+      description: |-
+        Comprovantes de entrega — criação + leitura; sem edição (imutável).
+        Filtrar por item via ?item=<uuid>.
+      tags:
+      - tms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PODRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PODRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PODRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POD'
+          description: ''
+  /api/tms/pods/{id}/:
+    get:
+      operationId: tms_pods_retrieve
+      description: |-
+        Comprovantes de entrega — criação + leitura; sem edição (imutável).
+        Filtrar por item via ?item=<uuid>.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - tms
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POD'
+          description: ''
+  /api/crm/clientes/:
+    get:
+      operationId: crm_clientes_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedClienteListList'
+          description: ''
+    post:
+      operationId: crm_clientes_create
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+  /api/crm/clientes/{id}/:
+    get:
+      operationId: crm_clientes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+    put:
+      operationId: crm_clientes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClienteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+    delete:
+      operationId: crm_clientes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: crm_clientes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClienteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClienteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClienteRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+  /api/crm/clientes/{id}/contrato/:
+    get:
+      operationId: crm_clientes_contrato_retrieve
+      description: GET /api/crm/clientes/<id>/contrato/ — retorna o contrato ativo
+        mais recente.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+  /api/crm/clientes/{id}/contatos/:
+    get:
+      operationId: crm_clientes_contatos_retrieve
+      description: GET /api/crm/clientes/<id>/contatos/
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+  /api/crm/clientes/{id}/historico/:
+    get:
+      operationId: crm_clientes_historico_retrieve
+      description: GET /api/crm/clientes/<id>/historico/
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+  /api/crm/clientes/{id}/oportunidades/:
+    get:
+      operationId: crm_clientes_oportunidades_retrieve
+      description: GET /api/crm/clientes/<id>/oportunidades/
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cliente'
+          description: ''
+  /api/crm/contatos/:
+    get:
+      operationId: crm_contatos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContatoList'
+          description: ''
+    post:
+      operationId: crm_contatos_create
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContatoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContatoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContatoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contato'
+          description: ''
+  /api/crm/contatos/{id}/:
+    get:
+      operationId: crm_contatos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contato'
+          description: ''
+    put:
+      operationId: crm_contatos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContatoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContatoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContatoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contato'
+          description: ''
+    delete:
+      operationId: crm_contatos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: crm_contatos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContatoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedContatoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContatoRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contato'
+          description: ''
+  /api/crm/oportunidades/:
+    get:
+      operationId: crm_oportunidades_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOportunidadeList'
+          description: ''
+    post:
+      operationId: crm_oportunidades_create
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oportunidade'
+          description: ''
+  /api/crm/oportunidades/{id}/:
+    get:
+      operationId: crm_oportunidades_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oportunidade'
+          description: ''
+    put:
+      operationId: crm_oportunidades_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oportunidade'
+          description: ''
+    delete:
+      operationId: crm_oportunidades_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: crm_oportunidades_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOportunidadeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOportunidadeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOportunidadeRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oportunidade'
+          description: ''
+  /api/crm/oportunidades/{id}/fechar-ganho/:
+    post:
+      operationId: crm_oportunidades_fechar_ganho_create
+      description: |-
+        POST /api/crm/oportunidades/<id>/fechar-ganho/
+        Fecha como ganho e ativa o cliente.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oportunidade'
+          description: ''
+  /api/crm/oportunidades/{id}/fechar-perdido/:
+    post:
+      operationId: crm_oportunidades_fechar_perdido_create
+      description: |-
+        POST /api/crm/oportunidades/<id>/fechar-perdido/
+        Body opcional: {"motivo": "Preço acima do concorrente"}
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OportunidadeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oportunidade'
+          description: ''
+  /api/crm/historico/:
+    get:
+      operationId: crm_historico_list
+      description: |-
+        Histórico de interações — criação e leitura apenas (imutável).
+        Filtro: ?cliente= ?oportunidade= ?tipo=
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHistoricoInteracaoList'
+          description: ''
+    post:
+      operationId: crm_historico_create
+      description: |-
+        Histórico de interações — criação e leitura apenas (imutável).
+        Filtro: ?cliente= ?oportunidade= ?tipo=
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoricoInteracaoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HistoricoInteracaoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HistoricoInteracaoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricoInteracao'
+          description: ''
+  /api/crm/historico/{id}/:
+    get:
+      operationId: crm_historico_retrieve
+      description: |-
+        Histórico de interações — criação e leitura apenas (imutável).
+        Filtro: ?cliente= ?oportunidade= ?tipo=
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoricoInteracao'
+          description: ''
+  /api/crm/contratos/:
+    get:
+      operationId: crm_contratos_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContratoList'
+          description: ''
+    post:
+      operationId: crm_contratos_create
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrato'
+          description: ''
+  /api/crm/contratos/{id}/:
+    get:
+      operationId: crm_contratos_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrato'
+          description: ''
+    put:
+      operationId: crm_contratos_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContratoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrato'
+          description: ''
+    delete:
+      operationId: crm_contratos_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '204':
+          description: No response body
+    patch:
+      operationId: crm_contratos_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - crm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContratoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedContratoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContratoRequest'
+      security:
+      - jwtAuth: []
+      - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contrato'
+          description: ''
+components:
+  schemas:
+    Armazem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        nome:
+          type: string
+          maxLength: 100
+        codigo:
+          type: string
+          maxLength: 20
+        ativo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        empresa:
+          type: string
+          format: uuid
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - codigo
+      - created_at
+      - empresa
+      - id
+      - nome
+    ArmazemRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 1
+          maxLength: 100
+        codigo:
+          type: string
+          minLength: 1
+          maxLength: 20
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - codigo
+      - empresa
+      - nome
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        usuario_nome:
+          type: string
+          readOnly: true
+        modulo:
+          type: string
+          maxLength: 50
+        acao:
+          type: string
+          maxLength: 100
+        objeto_tipo:
+          type: string
+          maxLength: 100
+        objeto_id:
+          type: string
+          format: uuid
+          nullable: true
+        payload_antes:
+          nullable: true
+        payload_depois:
+          nullable: true
+        ip:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        usuario:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - acao
+      - created_at
+      - id
+      - modulo
+      - objeto_tipo
+      - usuario_nome
+    CategoriaCnhEnum:
+      enum:
+      - A
+      - B
+      - AB
+      - C
+      - D
+      - E
+      type: string
+      description: |-
+        * `A` - A
+        * `B` - B
+        * `AB` - AB
+        * `C` - C
+        * `D` - D
+        * `E` - E
+    Cliente:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        cnpj:
+          type: string
+          maxLength: 18
+        razao_social:
+          type: string
+          maxLength: 255
+        nome_fantasia:
+          type: string
+          maxLength: 255
+        segmento:
+          $ref: '#/components/schemas/SegmentoEnum'
+        segmento_display:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/Status3e3Enum'
+        status_display:
+          type: string
+          readOnly: true
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        site:
+          type: string
+          format: uri
+          maxLength: 200
+        email_principal:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+          description: Consultor/vendedor responsável pelo cliente
+        responsavel_nome:
+          type: string
+          readOnly: true
+        observacoes:
+          type: string
+        total_oportunidades:
+          type: string
+          readOnly: true
+        contrato_ativo:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        contatos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contato'
+          readOnly: true
+      required:
+      - contatos
+      - contrato_ativo
+      - created_at
+      - id
+      - razao_social
+      - responsavel_nome
+      - segmento_display
+      - status_display
+      - total_oportunidades
+      - updated_at
+    ClienteList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        razao_social:
+          type: string
+          maxLength: 255
+        nome_fantasia:
+          type: string
+          maxLength: 255
+        cnpj:
+          type: string
+          maxLength: 18
+        segmento:
+          $ref: '#/components/schemas/SegmentoEnum'
+        segmento_display:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/Status3e3Enum'
+        status_display:
+          type: string
+          readOnly: true
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        responsavel_nome:
+          type: string
+          readOnly: true
+        total_contatos:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - razao_social
+      - responsavel_nome
+      - segmento_display
+      - status_display
+      - total_contatos
+    ClienteRequest:
+      type: object
+      properties:
+        cnpj:
+          type: string
+          maxLength: 18
+        razao_social:
+          type: string
+          minLength: 1
+          maxLength: 255
+        nome_fantasia:
+          type: string
+          maxLength: 255
+        segmento:
+          $ref: '#/components/schemas/SegmentoEnum'
+        status:
+          $ref: '#/components/schemas/Status3e3Enum'
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        site:
+          type: string
+          format: uri
+          maxLength: 200
+        email_principal:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+          description: Consultor/vendedor responsável pelo cliente
+        observacoes:
+          type: string
+      required:
+      - razao_social
+    Contato:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        cliente:
+          type: string
+          format: uuid
+        nome_completo:
+          type: string
+          maxLength: 255
+        cargo:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        whatsapp:
+          type: string
+          maxLength: 20
+        decisor:
+          type: boolean
+          description: Indica se esta pessoa tem poder de decisão sobre contratos
+        ativo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cliente
+      - created_at
+      - id
+      - nome_completo
+    ContatoRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cargo:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        whatsapp:
+          type: string
+          maxLength: 20
+        decisor:
+          type: boolean
+          description: Indica se esta pessoa tem poder de decisão sobre contratos
+        ativo:
+          type: boolean
+      required:
+      - cliente
+      - nome_completo
+    Contrato:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        cliente:
+          type: string
+          format: uuid
+        cliente_nome:
+          type: string
+          readOnly: true
+        numero:
+          type: string
+          maxLength: 50
+        servico:
+          $ref: '#/components/schemas/ServicoEnum'
+        servico_display:
+          type: string
+          readOnly: true
+        valor_mensal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          description: Valor mensal do contrato (R$)
+        vigencia_inicio:
+          type: string
+          format: date
+        vigencia_fim:
+          type: string
+          format: date
+          nullable: true
+          description: Deixar em branco para contrato por prazo indeterminado
+        sla_prazo_entrega_horas:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Prazo máximo de entrega acordado em horas
+        objeto:
+          type: string
+          description: Descrição do objeto do contrato
+        ativo:
+          type: boolean
+        vigente:
+          type: boolean
+          description: Retorna True se o contrato está dentro do prazo de vigência.
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cliente
+      - cliente_nome
+      - created_at
+      - id
+      - numero
+      - servico_display
+      - updated_at
+      - valor_mensal
+      - vigencia_inicio
+      - vigente
+    ContratoRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        numero:
+          type: string
+          minLength: 1
+          maxLength: 50
+        servico:
+          $ref: '#/components/schemas/ServicoEnum'
+        valor_mensal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          description: Valor mensal do contrato (R$)
+        vigencia_inicio:
+          type: string
+          format: date
+        vigencia_fim:
+          type: string
+          format: date
+          nullable: true
+          description: Deixar em branco para contrato por prazo indeterminado
+        sla_prazo_entrega_horas:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Prazo máximo de entrega acordado em horas
+        objeto:
+          type: string
+          description: Descrição do objeto do contrato
+        ativo:
+          type: boolean
+      required:
+      - cliente
+      - numero
+      - valor_mensal
+      - vigencia_inicio
+    Empresa:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        razao_social:
+          type: string
+          maxLength: 255
+        cnpj:
+          type: string
+          maxLength: 18
+        inscricao_estadual:
+          type: string
+          maxLength: 30
+        email_principal:
+          type: string
+          format: email
+          maxLength: 254
+        ativo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cnpj
+      - created_at
+      - email_principal
+      - id
+      - razao_social
+      - updated_at
+    EmpresaRequest:
+      type: object
+      properties:
+        razao_social:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cnpj:
+          type: string
+          minLength: 1
+          maxLength: 18
+        inscricao_estadual:
+          type: string
+          maxLength: 30
+        email_principal:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        ativo:
+          type: boolean
+      required:
+      - cnpj
+      - email_principal
+      - razao_social
+    Endereco:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        cep:
+          type: string
+          maxLength: 9
+        logradouro:
+          type: string
+          maxLength: 255
+        numero:
+          type: string
+          maxLength: 20
+        complemento:
+          type: string
+          maxLength: 100
+        bairro:
+          type: string
+          maxLength: 100
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - bairro
+      - cep
+      - cidade
+      - id
+      - logradouro
+      - uf
+    EnderecoRequest:
+      type: object
+      properties:
+        cep:
+          type: string
+          minLength: 1
+          maxLength: 9
+        logradouro:
+          type: string
+          minLength: 1
+          maxLength: 255
+        numero:
+          type: string
+          maxLength: 20
+        complemento:
+          type: string
+          maxLength: 100
+        bairro:
+          type: string
+          minLength: 1
+          maxLength: 100
+        cidade:
+          type: string
+          minLength: 1
+          maxLength: 100
+        uf:
+          type: string
+          minLength: 1
+          maxLength: 2
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - bairro
+      - cep
+      - cidade
+      - logradouro
+      - uf
+    EntradaMercadoria:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        armazem:
+          type: string
+          format: uuid
+        numero_nf:
+          type: string
+          maxLength: 50
+        fornecedor:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/Status86cEnum'
+        status_display:
+          type: string
+          readOnly: true
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        responsavel_nome:
+          type: string
+          readOnly: true
+        observacoes:
+          type: string
+        chegada_em:
+          type: string
+          format: date-time
+        concluida_em:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemEntrada'
+          readOnly: true
+      required:
+      - armazem
+      - chegada_em
+      - concluida_em
+      - created_at
+      - fornecedor
+      - id
+      - itens
+      - numero_nf
+      - responsavel_nome
+      - status_display
+    EntradaMercadoriaList:
+      type: object
+      description: Versão leve para listagem (sem itens aninhados).
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        numero_nf:
+          type: string
+          maxLength: 50
+        fornecedor:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/Status86cEnum'
+        status_display:
+          type: string
+          readOnly: true
+        chegada_em:
+          type: string
+          format: date-time
+        total_itens:
+          type: string
+          readOnly: true
+      required:
+      - chegada_em
+      - fornecedor
+      - id
+      - numero_nf
+      - status_display
+      - total_itens
+    EntradaMercadoriaRequest:
+      type: object
+      properties:
+        armazem:
+          type: string
+          format: uuid
+        numero_nf:
+          type: string
+          minLength: 1
+          maxLength: 50
+        fornecedor:
+          type: string
+          minLength: 1
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/Status86cEnum'
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        observacoes:
+          type: string
+        chegada_em:
+          type: string
+          format: date-time
+      required:
+      - armazem
+      - chegada_em
+      - fornecedor
+      - numero_nf
+    EtapaEnum:
+      enum:
+      - prospeccao
+      - qualificacao
+      - proposta
+      - negociacao
+      - fechado_ganho
+      - fechado_perdido
+      type: string
+      description: |-
+        * `prospeccao` - Prospecção
+        * `qualificacao` - Qualificação
+        * `proposta` - Proposta enviada
+        * `negociacao` - Em negociação
+        * `fechado_ganho` - Fechado — ganho
+        * `fechado_perdido` - Fechado — perdido
+    Filial:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        endereco:
+          allOf:
+          - $ref: '#/components/schemas/Endereco'
+          readOnly: true
+        nome:
+          type: string
+          maxLength: 255
+        cnpj:
+          type: string
+          maxLength: 18
+        codigo_interno:
+          type: string
+          maxLength: 30
+        matriz:
+          type: boolean
+        ativa:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        empresa:
+          type: string
+          format: uuid
+      required:
+      - cnpj
+      - created_at
+      - empresa
+      - endereco
+      - id
+      - nome
+    FilialRequest:
+      type: object
+      properties:
+        endereco_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        nome:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cnpj:
+          type: string
+          minLength: 1
+          maxLength: 18
+        codigo_interno:
+          type: string
+          maxLength: 30
+        matriz:
+          type: boolean
+        ativa:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+      required:
+      - cnpj
+      - empresa
+      - nome
+    HistoricoInteracao:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        cliente:
+          type: string
+          format: uuid
+        cliente_nome:
+          type: string
+          readOnly: true
+        oportunidade:
+          type: string
+          format: uuid
+          nullable: true
+          description: Oportunidade relacionada à interação (opcional)
+        contato:
+          type: string
+          format: uuid
+          nullable: true
+          description: Contato com quem a interação foi realizada (opcional)
+        contato_nome:
+          type: string
+          readOnly: true
+        tipo:
+          $ref: '#/components/schemas/HistoricoInteracaoTipoEnum'
+        tipo_display:
+          type: string
+          readOnly: true
+        resumo:
+          type: string
+        data_interacao:
+          type: string
+          format: date-time
+        registrado_por:
+          type: string
+          format: uuid
+          nullable: true
+        registrado_por_nome:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cliente
+      - cliente_nome
+      - contato_nome
+      - created_at
+      - id
+      - registrado_por_nome
+      - resumo
+      - tipo
+      - tipo_display
+    HistoricoInteracaoRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        oportunidade:
+          type: string
+          format: uuid
+          nullable: true
+          description: Oportunidade relacionada à interação (opcional)
+        contato:
+          type: string
+          format: uuid
+          nullable: true
+          description: Contato com quem a interação foi realizada (opcional)
+        tipo:
+          $ref: '#/components/schemas/HistoricoInteracaoTipoEnum'
+        resumo:
+          type: string
+          minLength: 1
+        data_interacao:
+          type: string
+          format: date-time
+        registrado_por:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - cliente
+      - resumo
+      - tipo
+    HistoricoInteracaoTipoEnum:
+      enum:
+      - ligacao
+      - email
+      - reuniao
+      - visita
+      - proposta
+      - outro
+      type: string
+      description: |-
+        * `ligacao` - Ligação telefônica
+        * `email` - E-mail
+        * `reuniao` - Reunião
+        * `visita` - Visita presencial
+        * `proposta` - Envio de proposta
+        * `outro` - Outro
+    ItemEntrada:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        produto:
+          type: string
+          format: uuid
+        produto_sku:
+          type: string
+          readOnly: true
+        produto_descricao:
+          type: string
+          readOnly: true
+        posicao:
+          type: string
+          format: uuid
+          nullable: true
+          description: Posição onde o item será armazenado
+        quantidade_esperada:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+        quantidade_conferida:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+          nullable: true
+        observacao:
+          type: string
+          maxLength: 255
+        tem_divergencia:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - produto
+      - produto_descricao
+      - produto_sku
+      - quantidade_esperada
+      - tem_divergencia
+    ItemEntradaRequest:
+      type: object
+      properties:
+        produto:
+          type: string
+          format: uuid
+        posicao:
+          type: string
+          format: uuid
+          nullable: true
+          description: Posição onde o item será armazenado
+        quantidade_esperada:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+        quantidade_conferida:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+          nullable: true
+        observacao:
+          type: string
+          maxLength: 255
+      required:
+      - produto
+      - quantidade_esperada
+    ItemRomaneio:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        romaneio:
+          type: string
+          format: uuid
+        saida_wms:
+          type: string
+          format: uuid
+          nullable: true
+          description: Saída de mercadoria correspondente no WMS
+        destinatario:
+          type: string
+          maxLength: 255
+        logradouro:
+          type: string
+          maxLength: 255
+        numero_end:
+          type: string
+          maxLength: 20
+        bairro:
+          type: string
+          maxLength: 100
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        cep:
+          type: string
+          maxLength: 9
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        ordem_entrega:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Ordem de parada na rota (0 = não definida)
+        status_entrega:
+          $ref: '#/components/schemas/StatusEntregaEnum'
+        status_entrega_display:
+          type: string
+          readOnly: true
+        observacao:
+          type: string
+          maxLength: 255
+        tem_pod:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - destinatario
+      - id
+      - romaneio
+      - status_entrega_display
+      - tem_pod
+    ItemRomaneioRequest:
+      type: object
+      properties:
+        romaneio:
+          type: string
+          format: uuid
+        saida_wms:
+          type: string
+          format: uuid
+          nullable: true
+          description: Saída de mercadoria correspondente no WMS
+        destinatario:
+          type: string
+          minLength: 1
+          maxLength: 255
+        logradouro:
+          type: string
+          maxLength: 255
+        numero_end:
+          type: string
+          maxLength: 20
+        bairro:
+          type: string
+          maxLength: 100
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        cep:
+          type: string
+          maxLength: 9
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        ordem_entrega:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Ordem de parada na rota (0 = não definida)
+        status_entrega:
+          $ref: '#/components/schemas/StatusEntregaEnum'
+        observacao:
+          type: string
+          maxLength: 255
+      required:
+      - destinatario
+      - romaneio
+    ItemSaida:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        produto:
+          type: string
+          format: uuid
+        produto_sku:
+          type: string
+          readOnly: true
+        posicao:
+          type: string
+          format: uuid
+        posicao_codigo:
+          type: string
+          readOnly: true
+        quantidade:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+      required:
+      - id
+      - posicao
+      - posicao_codigo
+      - produto
+      - produto_sku
+      - quantidade
+    ItemSaidaRequest:
+      type: object
+      properties:
+        produto:
+          type: string
+          format: uuid
+        posicao:
+          type: string
+          format: uuid
+        quantidade:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+      required:
+      - posicao
+      - produto
+      - quantidade
+    Motorista:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        nome_completo:
+          type: string
+          maxLength: 255
+        cpf:
+          type: string
+          maxLength: 14
+        cnh:
+          type: string
+          maxLength: 20
+        categoria_cnh:
+          $ref: '#/components/schemas/CategoriaCnhEnum'
+        categoria_display:
+          type: string
+          readOnly: true
+        validade_cnh:
+          type: string
+          format: date
+        telefone:
+          type: string
+          maxLength: 20
+        ativo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - categoria_display
+      - cnh
+      - cpf
+      - created_at
+      - id
+      - nome_completo
+      - updated_at
+      - validade_cnh
+    MotoristaRequest:
+      type: object
+      properties:
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cpf:
+          type: string
+          minLength: 1
+          maxLength: 14
+        cnh:
+          type: string
+          minLength: 1
+          maxLength: 20
+        categoria_cnh:
+          $ref: '#/components/schemas/CategoriaCnhEnum'
+        validade_cnh:
+          type: string
+          format: date
+        telefone:
+          type: string
+          maxLength: 20
+        ativo:
+          type: boolean
+      required:
+      - cnh
+      - cpf
+      - nome_completo
+      - validade_cnh
+    MovimentacaoEstoque:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        produto_sku:
+          type: string
+          readOnly: true
+        posicao_codigo:
+          type: string
+          readOnly: true
+        usuario_nome:
+          type: string
+          readOnly: true
+        tipo:
+          $ref: '#/components/schemas/MovimentacaoEstoqueTipoEnum'
+        quantidade:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,7}(?:\.\d{0,3})?$
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        posicao:
+          type: string
+          format: uuid
+        produto:
+          type: string
+          format: uuid
+        origem_entrada:
+          type: string
+          format: uuid
+          nullable: true
+        origem_saida:
+          type: string
+          format: uuid
+          nullable: true
+        usuario:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - created_at
+      - id
+      - posicao
+      - posicao_codigo
+      - produto
+      - produto_sku
+      - quantidade
+      - tipo
+      - usuario_nome
+    MovimentacaoEstoqueTipoEnum:
+      enum:
+      - entrada
+      - saida
+      - ajuste
+      - transferencia
+      type: string
+      description: |-
+        * `entrada` - Entrada
+        * `saida` - Saída
+        * `ajuste` - Ajuste de inventário
+        * `transferencia` - Transferência
+    Ocorrencia:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        romaneio:
+          type: string
+          format: uuid
+        item:
+          type: string
+          format: uuid
+          nullable: true
+          description: Item específico ao qual a ocorrência se refere (opcional)
+        tipo:
+          $ref: '#/components/schemas/OcorrenciaTipoEnum'
+        tipo_display:
+          type: string
+          readOnly: true
+        descricao:
+          type: string
+        registrado_por:
+          type: string
+          format: uuid
+          nullable: true
+        registrado_por_nome:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - descricao
+      - id
+      - registrado_por_nome
+      - romaneio
+      - tipo
+      - tipo_display
+    OcorrenciaRequest:
+      type: object
+      properties:
+        romaneio:
+          type: string
+          format: uuid
+        item:
+          type: string
+          format: uuid
+          nullable: true
+          description: Item específico ao qual a ocorrência se refere (opcional)
+        tipo:
+          $ref: '#/components/schemas/OcorrenciaTipoEnum'
+        descricao:
+          type: string
+          minLength: 1
+        registrado_por:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - descricao
+      - romaneio
+      - tipo
+    OcorrenciaTipoEnum:
+      enum:
+      - avaria
+      - atraso
+      - tentativa
+      - roubo
+      - acidente
+      - recusa
+      - outro
+      type: string
+      description: |-
+        * `avaria` - Avaria / dano
+        * `atraso` - Atraso
+        * `tentativa` - Tentativa de entrega sem sucesso
+        * `roubo` - Roubo / furto
+        * `acidente` - Acidente
+        * `recusa` - Recusa do destinatário
+        * `outro` - Outro
+    Oportunidade:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        cliente:
+          type: string
+          format: uuid
+        cliente_nome:
+          type: string
+          readOnly: true
+        titulo:
+          type: string
+          maxLength: 255
+        servico:
+          $ref: '#/components/schemas/ServicoEnum'
+        servico_display:
+          type: string
+          readOnly: true
+        valor_estimado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+          description: Valor mensal estimado do contrato (R$)
+        etapa:
+          $ref: '#/components/schemas/EtapaEnum'
+        etapa_display:
+          type: string
+          readOnly: true
+        probabilidade:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Probabilidade de fechamento (0-100%)
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        responsavel_nome:
+          type: string
+          readOnly: true
+        previsao_fechamento:
+          type: string
+          format: date
+          nullable: true
+        motivo_perda:
+          type: string
+          readOnly: true
+        observacoes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - cliente
+      - cliente_nome
+      - created_at
+      - etapa_display
+      - id
+      - motivo_perda
+      - responsavel_nome
+      - servico_display
+      - titulo
+      - updated_at
+    OportunidadeRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        servico:
+          $ref: '#/components/schemas/ServicoEnum'
+        valor_estimado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+          description: Valor mensal estimado do contrato (R$)
+        etapa:
+          $ref: '#/components/schemas/EtapaEnum'
+        probabilidade:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Probabilidade de fechamento (0-100%)
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        previsao_fechamento:
+          type: string
+          format: date
+          nullable: true
+        observacoes:
+          type: string
+      required:
+      - cliente
+      - titulo
+    POD:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        item:
+          type: string
+          format: uuid
+        item_destinatario:
+          type: string
+          readOnly: true
+        assinado_por:
+          type: string
+          description: Nome de quem recebeu a mercadoria
+          maxLength: 255
+        observacao:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+          description: GPS no momento da entrega
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - item
+      - item_destinatario
+    PODRequest:
+      type: object
+      properties:
+        item:
+          type: string
+          format: uuid
+        assinado_por:
+          type: string
+          description: Nome de quem recebeu a mercadoria
+          maxLength: 255
+        observacao:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+          description: GPS no momento da entrega
+        longitude:
+          type: number
+          format: double
+          nullable: true
+      required:
+      - item
+    PaginatedArmazemList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Armazem'
+    PaginatedAuditLogList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLog'
+    PaginatedClienteListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClienteList'
+    PaginatedContatoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contato'
+    PaginatedContratoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contrato'
+    PaginatedEmpresaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Empresa'
+    PaginatedEntradaMercadoriaListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntradaMercadoriaList'
+    PaginatedFilialList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filial'
+    PaginatedHistoricoInteracaoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoricoInteracao'
+    PaginatedItemRomaneioList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemRomaneio'
+    PaginatedMotoristaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Motorista'
+    PaginatedMovimentacaoEstoqueList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MovimentacaoEstoque'
+    PaginatedOcorrenciaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ocorrencia'
+    PaginatedOportunidadeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Oportunidade'
+    PaginatedPODList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/POD'
+    PaginatedPerfilList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Perfil'
+    PaginatedPermissaoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissao'
+    PaginatedPosicaoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Posicao'
+    PaginatedProdutoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Produto'
+    PaginatedRomaneioListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RomaneioList'
+    PaginatedSaidaMercadoriaList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaidaMercadoria'
+    PaginatedUsuarioList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Usuario'
+    PaginatedVeiculoList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Veiculo'
+    PatchedArmazemRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 1
+          maxLength: 100
+        codigo:
+          type: string
+          minLength: 1
+          maxLength: 20
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedClienteRequest:
+      type: object
+      properties:
+        cnpj:
+          type: string
+          maxLength: 18
+        razao_social:
+          type: string
+          minLength: 1
+          maxLength: 255
+        nome_fantasia:
+          type: string
+          maxLength: 255
+        segmento:
+          $ref: '#/components/schemas/SegmentoEnum'
+        status:
+          $ref: '#/components/schemas/Status3e3Enum'
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        site:
+          type: string
+          format: uri
+          maxLength: 200
+        email_principal:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+          description: Consultor/vendedor responsável pelo cliente
+        observacoes:
+          type: string
+    PatchedContatoRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cargo:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        whatsapp:
+          type: string
+          maxLength: 20
+        decisor:
+          type: boolean
+          description: Indica se esta pessoa tem poder de decisão sobre contratos
+        ativo:
+          type: boolean
+    PatchedContratoRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        numero:
+          type: string
+          minLength: 1
+          maxLength: 50
+        servico:
+          $ref: '#/components/schemas/ServicoEnum'
+        valor_mensal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          description: Valor mensal do contrato (R$)
+        vigencia_inicio:
+          type: string
+          format: date
+        vigencia_fim:
+          type: string
+          format: date
+          nullable: true
+          description: Deixar em branco para contrato por prazo indeterminado
+        sla_prazo_entrega_horas:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Prazo máximo de entrega acordado em horas
+        objeto:
+          type: string
+          description: Descrição do objeto do contrato
+        ativo:
+          type: boolean
+    PatchedEmpresaRequest:
+      type: object
+      properties:
+        razao_social:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cnpj:
+          type: string
+          minLength: 1
+          maxLength: 18
+        inscricao_estadual:
+          type: string
+          maxLength: 30
+        email_principal:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        ativo:
+          type: boolean
+    PatchedEntradaMercadoriaRequest:
+      type: object
+      properties:
+        armazem:
+          type: string
+          format: uuid
+        numero_nf:
+          type: string
+          minLength: 1
+          maxLength: 50
+        fornecedor:
+          type: string
+          minLength: 1
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/Status86cEnum'
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        observacoes:
+          type: string
+        chegada_em:
+          type: string
+          format: date-time
+    PatchedFilialRequest:
+      type: object
+      properties:
+        endereco_id:
+          type: string
+          format: uuid
+          writeOnly: true
+        nome:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cnpj:
+          type: string
+          minLength: 1
+          maxLength: 18
+        codigo_interno:
+          type: string
+          maxLength: 30
+        matriz:
+          type: boolean
+        ativa:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+    PatchedItemRomaneioRequest:
+      type: object
+      properties:
+        romaneio:
+          type: string
+          format: uuid
+        saida_wms:
+          type: string
+          format: uuid
+          nullable: true
+          description: Saída de mercadoria correspondente no WMS
+        destinatario:
+          type: string
+          minLength: 1
+          maxLength: 255
+        logradouro:
+          type: string
+          maxLength: 255
+        numero_end:
+          type: string
+          maxLength: 20
+        bairro:
+          type: string
+          maxLength: 100
+        cidade:
+          type: string
+          maxLength: 100
+        uf:
+          type: string
+          maxLength: 2
+        cep:
+          type: string
+          maxLength: 9
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        ordem_entrega:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Ordem de parada na rota (0 = não definida)
+        status_entrega:
+          $ref: '#/components/schemas/StatusEntregaEnum'
+        observacao:
+          type: string
+          maxLength: 255
+    PatchedMotoristaRequest:
+      type: object
+      properties:
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        cpf:
+          type: string
+          minLength: 1
+          maxLength: 14
+        cnh:
+          type: string
+          minLength: 1
+          maxLength: 20
+        categoria_cnh:
+          $ref: '#/components/schemas/CategoriaCnhEnum'
+        validade_cnh:
+          type: string
+          format: date
+        telefone:
+          type: string
+          maxLength: 20
+        ativo:
+          type: boolean
+    PatchedOportunidadeRequest:
+      type: object
+      properties:
+        cliente:
+          type: string
+          format: uuid
+        titulo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        servico:
+          $ref: '#/components/schemas/ServicoEnum'
+        valor_estimado:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          nullable: true
+          description: Valor mensal estimado do contrato (R$)
+        etapa:
+          $ref: '#/components/schemas/EtapaEnum'
+        probabilidade:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          description: Probabilidade de fechamento (0-100%)
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        previsao_fechamento:
+          type: string
+          format: date
+          nullable: true
+        observacoes:
+          type: string
+    PatchedPerfilRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 1
+          maxLength: 100
+        descricao:
+          type: string
+          maxLength: 255
+        sistema:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+    PatchedProdutoRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          minLength: 1
+          maxLength: 50
+        descricao:
+          type: string
+          minLength: 1
+          maxLength: 255
+        unidade:
+          type: string
+          minLength: 1
+          maxLength: 10
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+    PatchedRomaneioRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status045Enum'
+        veiculo:
+          type: string
+          format: uuid
+          nullable: true
+        motorista:
+          type: string
+          format: uuid
+          nullable: true
+        data_saida_prevista:
+          type: string
+          format: date-time
+          nullable: true
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        observacoes:
+          type: string
+    PatchedSaidaMercadoriaRequest:
+      type: object
+      properties:
+        armazem:
+          type: string
+          format: uuid
+        numero_pedido:
+          type: string
+          maxLength: 50
+        destinatario:
+          type: string
+          minLength: 1
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/SaidaMercadoriaStatusEnum'
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedUsuarioRequest:
+      type: object
+      description: Serializer completo — usado para leitura e criação.
+      properties:
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        cargo:
+          type: string
+          maxLength: 100
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+          nullable: true
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+    PatchedVeiculoRequest:
+      type: object
+      properties:
+        placa:
+          type: string
+          minLength: 1
+          maxLength: 10
+        tipo:
+          $ref: '#/components/schemas/VeiculoTipoEnum'
+        modelo:
+          type: string
+          maxLength: 100
+        ano:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        capacidade_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+          description: Capacidade de carga em quilogramas
+        status:
+          $ref: '#/components/schemas/VeiculoStatusEnum'
+        ativo:
+          type: boolean
+    Perfil:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        permissoes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permissao'
+          readOnly: true
+        nome:
+          type: string
+          maxLength: 100
+        descricao:
+          type: string
+          maxLength: 255
+        sistema:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+      required:
+      - empresa
+      - id
+      - nome
+      - permissoes
+    PerfilRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+          minLength: 1
+          maxLength: 100
+        descricao:
+          type: string
+          maxLength: 255
+        sistema:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+      required:
+      - empresa
+      - nome
+    Permissao:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        codigo:
+          type: string
+          maxLength: 100
+        modulo:
+          type: string
+          maxLength: 50
+        acao:
+          type: string
+          maxLength: 100
+        descricao:
+          type: string
+          maxLength: 255
+      required:
+      - acao
+      - codigo
+      - id
+      - modulo
+    PermissaoRequest:
+      type: object
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+          maxLength: 100
+        modulo:
+          type: string
+          minLength: 1
+          maxLength: 50
+        acao:
+          type: string
+          minLength: 1
+          maxLength: 100
+        descricao:
+          type: string
+          maxLength: 255
+      required:
+      - acao
+      - codigo
+      - modulo
+    Posicao:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        codigo:
+          type: string
+          maxLength: 30
+        ativo:
+          type: boolean
+        saldo_atual:
+          type: string
+          readOnly: true
+      required:
+      - codigo
+      - id
+      - saldo_atual
+    Produto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        sku:
+          type: string
+          maxLength: 50
+        descricao:
+          type: string
+          maxLength: 255
+        unidade:
+          type: string
+          maxLength: 10
+        ativo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        empresa:
+          type: string
+          format: uuid
+      required:
+      - created_at
+      - descricao
+      - empresa
+      - id
+      - sku
+    ProdutoRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          minLength: 1
+          maxLength: 50
+        descricao:
+          type: string
+          minLength: 1
+          maxLength: 255
+        unidade:
+          type: string
+          minLength: 1
+          maxLength: 10
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+      required:
+      - descricao
+      - empresa
+      - sku
+    Romaneio:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        numero:
+          type: string
+          readOnly: true
+          description: Número sequencial do romaneio (pode ser gerado automaticamente)
+        status:
+          $ref: '#/components/schemas/Status045Enum'
+        status_display:
+          type: string
+          readOnly: true
+        veiculo:
+          type: string
+          format: uuid
+          nullable: true
+        veiculo_placa:
+          type: string
+          readOnly: true
+        motorista:
+          type: string
+          format: uuid
+          nullable: true
+        motorista_nome:
+          type: string
+          readOnly: true
+        data_saida_prevista:
+          type: string
+          format: date-time
+          nullable: true
+        data_saida_real:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        data_conclusao:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        observacoes:
+          type: string
+        total_itens:
+          type: string
+          readOnly: true
+        itens_entregues:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemRomaneio'
+          readOnly: true
+      required:
+      - created_at
+      - data_conclusao
+      - data_saida_real
+      - id
+      - itens
+      - itens_entregues
+      - motorista_nome
+      - numero
+      - status_display
+      - total_itens
+      - updated_at
+      - veiculo_placa
+    RomaneioList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        numero:
+          type: string
+          description: Número sequencial do romaneio (pode ser gerado automaticamente)
+          maxLength: 50
+        status:
+          $ref: '#/components/schemas/Status045Enum'
+        status_display:
+          type: string
+          readOnly: true
+        veiculo_placa:
+          type: string
+          readOnly: true
+        motorista_nome:
+          type: string
+          readOnly: true
+        data_saida_prevista:
+          type: string
+          format: date-time
+          nullable: true
+        data_saida_real:
+          type: string
+          format: date-time
+          nullable: true
+        total_itens:
+          type: string
+          readOnly: true
+        itens_entregues:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - itens_entregues
+      - motorista_nome
+      - status_display
+      - total_itens
+      - veiculo_placa
+    RomaneioRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status045Enum'
+        veiculo:
+          type: string
+          format: uuid
+          nullable: true
+        motorista:
+          type: string
+          format: uuid
+          nullable: true
+        data_saida_prevista:
+          type: string
+          format: date-time
+          nullable: true
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        observacoes:
+          type: string
+    SaidaMercadoria:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        armazem:
+          type: string
+          format: uuid
+        numero_pedido:
+          type: string
+          maxLength: 50
+        destinatario:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/SaidaMercadoriaStatusEnum'
+        status_display:
+          type: string
+          readOnly: true
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+        expedida_em:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemSaida'
+          readOnly: true
+      required:
+      - armazem
+      - created_at
+      - destinatario
+      - expedida_em
+      - id
+      - itens
+      - status_display
+    SaidaMercadoriaRequest:
+      type: object
+      properties:
+        armazem:
+          type: string
+          format: uuid
+        numero_pedido:
+          type: string
+          maxLength: 50
+        destinatario:
+          type: string
+          minLength: 1
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/SaidaMercadoriaStatusEnum'
+        responsavel:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - armazem
+      - destinatario
+    SaidaMercadoriaStatusEnum:
+      enum:
+      - pendente
+      - em_separacao
+      - separado
+      - expedido
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `em_separacao` - Em separação
+        * `separado` - Separado
+        * `expedido` - Expedido
+    SegmentoEnum:
+      enum:
+      - industria
+      - varejo
+      - distribuicao
+      - ecommerce
+      - agronegocio
+      - saude
+      - outro
+      type: string
+      description: |-
+        * `industria` - Indústria
+        * `varejo` - Varejo
+        * `distribuicao` - Distribuição
+        * `ecommerce` - E-commerce
+        * `agronegocio` - Agronegócio
+        * `saude` - Saúde
+        * `outro` - Outro
+    ServicoEnum:
+      enum:
+      - armazenagem
+      - frete
+      - ambos
+      type: string
+      description: |-
+        * `armazenagem` - Armazenagem
+        * `frete` - Frete
+        * `ambos` - Armazenagem + Frete
+    Status045Enum:
+      enum:
+      - aberto
+      - em_rota
+      - concluido
+      - com_ocorrencia
+      - cancelado
+      type: string
+      description: |-
+        * `aberto` - Aberto
+        * `em_rota` - Em rota
+        * `concluido` - Concluído
+        * `com_ocorrencia` - Com ocorrência
+        * `cancelado` - Cancelado
+    Status3e3Enum:
+      enum:
+      - lead
+      - ativo
+      - inativo
+      - bloqueado
+      type: string
+      description: |-
+        * `lead` - Lead
+        * `ativo` - Ativo
+        * `inativo` - Inativo
+        * `bloqueado` - Bloqueado
+    Status86cEnum:
+      enum:
+      - pendente
+      - em_andamento
+      - concluido
+      - divergencia
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `em_andamento` - Em andamento
+        * `concluido` - Concluído
+        * `divergencia` - Divergência
+    StatusEntregaEnum:
+      enum:
+      - pendente
+      - entregue
+      - tentativa
+      - devolvido
+      type: string
+      description: |-
+        * `pendente` - Pendente
+        * `entregue` - Entregue
+        * `tentativa` - Tentativa sem sucesso
+        * `devolvido` - Devolvido
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    TokenVerifyRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - token
+    Usuario:
+      type: object
+      description: Serializer completo — usado para leitura e criação.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        nome_completo:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        cargo:
+          type: string
+          maxLength: 100
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+          nullable: true
+        empresa_nome:
+          type: string
+          readOnly: true
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+        filial_nome:
+          type: string
+          readOnly: true
+        perfis:
+          type: array
+          items:
+            $ref: '#/components/schemas/Perfil'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - empresa_nome
+      - filial_nome
+      - id
+      - nome_completo
+      - perfis
+    UsuarioCreate:
+      type: object
+      description: Serializer para criação de usuário com senha.
+      properties:
+        nome_completo:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        cargo:
+          type: string
+          maxLength: 100
+        empresa:
+          type: string
+          format: uuid
+          nullable: true
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - email
+      - nome_completo
+    UsuarioCreateRequest:
+      type: object
+      description: Serializer para criação de usuário com senha.
+      properties:
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        telefone:
+          type: string
+          maxLength: 20
+        cargo:
+          type: string
+          maxLength: 100
+        empresa:
+          type: string
+          format: uuid
+          nullable: true
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - email
+      - nome_completo
+      - password
+    UsuarioRequest:
+      type: object
+      description: Serializer completo — usado para leitura e criação.
+      properties:
+        nome_completo:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        telefone:
+          type: string
+          maxLength: 20
+        cargo:
+          type: string
+          maxLength: 100
+        ativo:
+          type: boolean
+        empresa:
+          type: string
+          format: uuid
+          nullable: true
+        filial:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - email
+      - nome_completo
+    Veiculo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        placa:
+          type: string
+          maxLength: 10
+        tipo:
+          $ref: '#/components/schemas/VeiculoTipoEnum'
+        tipo_display:
+          type: string
+          readOnly: true
+        modelo:
+          type: string
+          maxLength: 100
+        ano:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        capacidade_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+          description: Capacidade de carga em quilogramas
+        status:
+          $ref: '#/components/schemas/VeiculoStatusEnum'
+        status_display:
+          type: string
+          readOnly: true
+        ativo:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - placa
+      - status_display
+      - tipo_display
+      - updated_at
+    VeiculoRequest:
+      type: object
+      properties:
+        placa:
+          type: string
+          minLength: 1
+          maxLength: 10
+        tipo:
+          $ref: '#/components/schemas/VeiculoTipoEnum'
+        modelo:
+          type: string
+          maxLength: 100
+        ano:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        capacidade_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+          description: Capacidade de carga em quilogramas
+        status:
+          $ref: '#/components/schemas/VeiculoStatusEnum'
+        ativo:
+          type: boolean
+      required:
+      - placa
+    VeiculoStatusEnum:
+      enum:
+      - disponivel
+      - em_rota
+      - manutencao
+      - inativo
+      type: string
+      description: |-
+        * `disponivel` - Disponível
+        * `em_rota` - Em rota
+        * `manutencao` - Em manutenção
+        * `inativo` - Inativo
+    VeiculoTipoEnum:
+      enum:
+      - proprio
+      - terceiro
+      - moto
+      - furgao
+      - caminhao
+      type: string
+      description: |-
+        * `proprio` - Próprio
+        * `terceiro` - Terceirizado
+        * `moto` - Moto
+        * `furgao` - Furgão
+        * `caminhao` - Caminhão
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: auth
+  description: Autenticação JWT
+- name: core
+  description: Empresas, Usuários, Perfis, RBAC e AuditLog
+- name: wms
+  description: Warehouse Management System
+- name: tms
+  description: Transport Management System
+- name: crm
+  description: Customer Relationship Management

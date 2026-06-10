@@ -1,0 +1,37 @@
+FROM python:3.11-slim AS base
+
+# Evita bytecode e buffer no stdout
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Dependências do sistema (psycopg2 precisa de libpq)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# ─── Estágio de desenvolvimento ───────────────────────────────────────────────
+FROM base AS development
+
+COPY requirements/development.txt .
+RUN pip install --no-cache-dir -r development.txt
+
+COPY . .
+
+EXPOSE 8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# ─── Estágio de produção ──────────────────────────────────────────────────────
+FROM base AS production
+
+COPY requirements/production.txt .
+RUN pip install --no-cache-dir -r production.txt
+
+COPY . .
+
+RUN python manage.py collectstatic --noinput
+
+EXPOSE 8000
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
