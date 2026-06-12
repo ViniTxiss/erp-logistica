@@ -26,7 +26,7 @@ class ArmazemViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Armazem.objects.filter(empresa=self.request.user.empresa)
+        return Armazem.objects.para_request(self.request)
 
 
 class PosicaoViewSet(viewsets.ReadOnlyModelViewSet):
@@ -71,7 +71,7 @@ class ProdutoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Produto.objects.filter(empresa=self.request.user.empresa)
+        return Produto.objects.para_request(self.request)
 
 
 class EntradaMercadoriaViewSet(viewsets.ModelViewSet):

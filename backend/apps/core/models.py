@@ -200,13 +200,19 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         return self.ativo
 
     def tem_permissao(self, codigo: str) -> bool:
-        """Verifica se o usuário possui um código de permissão via seus perfis."""
+        """Verifica se o usuário possui um código de permissão via seus perfis com cache em memória."""
         if self.is_superuser:
             return True
-        return PerfilUsuario.objects.filter(
-            usuario=self,
-            perfil__perfilpermissao__permissao__codigo=codigo,
-        ).exists()
+
+        if not hasattr(self, "_permissoes_cache"):
+            self._permissoes_cache = set(
+                PerfilUsuario.objects
+                .filter(usuario=self)
+                .select_related("perfil")
+                .prefetch_related("perfil__permissoes")
+                .values_list("perfil__perfilpermissao__permissao__codigo", flat=True)
+            )
+        return codigo in self._permissoes_cache
 
 
 class PerfilUsuario(models.Model):

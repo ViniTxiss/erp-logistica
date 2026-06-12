@@ -55,7 +55,7 @@ def romaneio_criar(request):
             numero=numero,
             veiculo=veiculo,
             motorista=motorista,
-            previsao_saida=previsao_saida or None,
+            data_saida_prevista=previsao_saida or None,
             status="aberto"
         )
         
@@ -87,12 +87,18 @@ def motorista_criar(request):
     if request.method == "POST":
         nome = request.POST.get("nome")
         cnh = request.POST.get("cnh")
+        cpf = request.POST.get("cpf")
+        categoria_cnh = request.POST.get("categoria_cnh", "B")
+        validade_cnh = request.POST.get("validade_cnh")
         telefone = request.POST.get("telefone")
         
         Motorista.objects.create(
             empresa=request.user.empresa,
             nome_completo=nome,
+            cpf=cpf,
             cnh=cnh,
+            categoria_cnh=categoria_cnh,
+            validade_cnh=validade_cnh or None,
             telefone=telefone,
             ativo=True
         )

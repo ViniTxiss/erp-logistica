@@ -53,7 +53,10 @@ def test_motorista_criar_view(client, usuario):
     
     data = {
         "nome": "João Caminhoneiro",
+        "cpf": "123.456.789-00",
         "cnh": "123456789",
+        "categoria_cnh": "D",
+        "validade_cnh": "2030-12-31",
         "telefone": "11999999999"
     }
     
@@ -61,4 +64,4 @@ def test_motorista_criar_view(client, usuario):
     assert response.status_code == 200
     assert "tms/partials/tabela_motoristas.html" in [t.name for t in response.templates]
     
-    assert Motorista.objects.filter(nome="João Caminhoneiro", empresa=usuario.empresa).exists()
+    assert Motorista.objects.filter(nome_completo="João Caminhoneiro", empresa=usuario.empresa).exists()

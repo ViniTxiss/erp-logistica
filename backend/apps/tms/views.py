@@ -28,7 +28,7 @@ class VeiculoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = Veiculo.objects.filter(empresa=self.request.user.empresa)
+        qs = Veiculo.objects.para_request(self.request)
 
         status_filtro = self.request.query_params.get("status")
         if status_filtro:
@@ -55,7 +55,7 @@ class MotoristaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = Motorista.objects.filter(empresa=self.request.user.empresa)
+        qs = Motorista.objects.para_request(self.request)
 
         apenas_ativos = self.request.query_params.get("ativo")
         if apenas_ativos is not None:
@@ -78,9 +78,9 @@ class RomaneioViewSet(viewsets.ModelViewSet):
         return RomaneioSerializer
 
     def get_queryset(self):
-        qs = Romaneio.objects.select_related(
+        qs = Romaneio.objects.para_request(self.request).select_related(
             "veiculo", "motorista", "responsavel"
-        ).filter(empresa=self.request.user.empresa)
+        )
 
         status_filtro = self.request.query_params.get("status")
         if status_filtro:

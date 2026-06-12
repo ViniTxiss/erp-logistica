@@ -1,4 +1,4 @@
-﻿"""
+"""
 Testes unitários dos models do Core.
 Cobrem: Empresa, Usuario, RBAC (Perfil/Permissão) e AuditLog.
 Sem chamadas HTTP — lógica de negócio pura.
@@ -349,6 +349,24 @@ class TestAuditLogModel:
                 objeto_tipo="Teste",
             )
         assert AuditLog.objects.filter(usuario=usuario).count() == 3
+
+    def test_auditlog_trigger_imutabilidade(self, usuario):
+        """Garante que a trigger impeça UPDATE e DELETE na tabela core_auditlog."""
+        from django.db import transaction
+        log = AuditLog.objects.create(
+            usuario=usuario,
+            modulo="wms",
+            acao="teste.criar",
+            objeto_tipo="Teste",
+        )
+        log.acao = "teste.modificar"
+        with transaction.atomic():
+            with pytest.raises(IntegrityError):
+                log.save()
+
+        with transaction.atomic():
+            with pytest.raises(IntegrityError):
+                log.delete()
 
 
 # ─── Isolamento multi-tenant ─────────────────────────────────────────────────

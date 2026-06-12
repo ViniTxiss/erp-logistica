@@ -32,9 +32,9 @@ class ClienteViewSet(viewsets.ModelViewSet):
         return ClienteSerializer
 
     def get_queryset(self):
-        qs = Cliente.objects.select_related(
+        qs = Cliente.objects.para_request(self.request).select_related(
             "responsavel"
-        ).filter(empresa=self.request.user.empresa)
+        )
 
         status_filtro = self.request.query_params.get("status")
         if status_filtro:

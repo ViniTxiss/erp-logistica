@@ -15,6 +15,7 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from apps.core.models import Empresa, Filial, Usuario
+from apps.core.base_models import TenantModel
 
 
 # ─── Choices ──────────────────────────────────────────────────────────────────
@@ -62,7 +63,7 @@ class ServicoContratado(models.TextChoices):
 
 # ─── Cliente ──────────────────────────────────────────────────────────────────
 
-class Cliente(models.Model):
+class Cliente(TenantModel):
     """
     Empresa cliente que contrata serviços logísticos (frete, armazenagem).
     Nasce como lead e evolui para ativo após fechamento de oportunidade.
@@ -93,8 +94,6 @@ class Cliente(models.Model):
         help_text="Consultor/vendedor responsável pelo cliente"
     )
     observacoes    = models.TextField(blank=True)
-    created_at     = models.DateTimeField(auto_now_add=True)
-    updated_at     = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name        = "Cliente"

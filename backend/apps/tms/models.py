@@ -14,6 +14,7 @@ from django.db import models, transaction
 from django.utils import timezone
 
 from apps.core.models import Empresa, Filial, Usuario
+from apps.core.base_models import TenantModel
 
 
 # ─── Veículo ──────────────────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ class StatusVeiculo(models.TextChoices):
     INATIVO     = "inativo",     "Inativo"
 
 
-class Veiculo(models.Model):
+class Veiculo(TenantModel):
     """
     Representa um veículo da frota (própria ou terceirizada).
     """
@@ -48,8 +49,6 @@ class Veiculo(models.Model):
     status         = models.CharField(max_length=20, choices=StatusVeiculo.choices,
                                       default=StatusVeiculo.DISPONIVEL)
     ativo          = models.BooleanField(default=True)
-    created_at     = models.DateTimeField(auto_now_add=True)
-    updated_at     = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name        = "Veículo"
@@ -72,7 +71,7 @@ class CategoriasCNH(models.TextChoices):
     E  = "E",  "E"
 
 
-class Motorista(models.Model):
+class Motorista(TenantModel):
     """
     Motorista vinculado à empresa. Pode ser colaborador próprio ou terceirizado.
     """
@@ -85,8 +84,6 @@ class Motorista(models.Model):
     validade_cnh   = models.DateField()
     telefone       = models.CharField(max_length=20, blank=True)
     ativo          = models.BooleanField(default=True)
-    created_at     = models.DateTimeField(auto_now_add=True)
-    updated_at     = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name        = "Motorista"
@@ -108,7 +105,7 @@ class StatusRomaneio(models.TextChoices):
     CANCELADO       = "cancelado",       "Cancelado"
 
 
-class Romaneio(models.Model):
+class Romaneio(TenantModel):
     """
     Documento de carga — agrupa pedidos (ItemRomaneio) para uma rota de entrega.
 
@@ -138,8 +135,6 @@ class Romaneio(models.Model):
         related_name="romaneios_responsavel"
     )
     observacoes          = models.TextField(blank=True)
-    created_at           = models.DateTimeField(auto_now_add=True)
-    updated_at           = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name        = "Romaneio"

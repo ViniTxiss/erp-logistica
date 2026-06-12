@@ -12,18 +12,18 @@ import uuid
 from django.db import models
 from django.db import transaction
 from apps.core.models import Empresa, Filial, Usuario
+from apps.core.base_models import TenantModel
 
 
 # ─── Estrutura física do armazém ──────────────────────────────────────────────
 
-class Armazem(models.Model):
+class Armazem(TenantModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name="armazens")
     filial = models.ForeignKey(Filial, on_delete=models.SET_NULL, null=True, blank=True)
     nome = models.CharField(max_length=100)
     codigo = models.CharField(max_length=20)
     ativo = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Armazém"
@@ -115,7 +115,7 @@ class Posicao(models.Model):
 
 # ─── Produtos (referência simples para MVP) ───────────────────────────────────
 
-class Produto(models.Model):
+class Produto(TenantModel):
     """
     Cadastro básico de produto para o MVP.
     Em versões futuras pode ser um módulo separado com SKU completo.
@@ -126,7 +126,6 @@ class Produto(models.Model):
     descricao = models.CharField(max_length=255)
     unidade = models.CharField(max_length=10, default="un")  # un, kg, cx, ...
     ativo = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Produto"
