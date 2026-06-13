@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # ─── Estágio de desenvolvimento ───────────────────────────────────────────────
 FROM base AS development
 
-COPY requirements/development.txt .
-RUN pip install --no-cache-dir -r development.txt
+COPY requirements/ ./requirements/
+RUN pip install --no-cache-dir -r requirements/development.txt
 
 COPY . .
 
@@ -26,8 +26,8 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # ─── Estágio de produção ──────────────────────────────────────────────────────
 FROM base AS production
 
-COPY requirements/production.txt .
-RUN pip install --no-cache-dir -r production.txt
+COPY requirements/ ./requirements/
+RUN pip install --no-cache-dir -r requirements/production.txt
 
 COPY . .
 
