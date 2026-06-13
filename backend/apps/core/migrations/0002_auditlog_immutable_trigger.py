@@ -7,7 +7,7 @@ def create_trigger(apps, schema_editor):
             CREATE OR REPLACE FUNCTION prevent_auditlog_mutation()
             RETURNS TRIGGER AS $$
             BEGIN
-                RAISE EXCEPTION 'AuditLog é imutável. Operação % negada.', TG_OP;
+                RAISE EXCEPTION 'AuditLog é imutável. Operação %% negada.', TG_OP;
                 RETURN NULL;
             END;
             $$ LANGUAGE plpgsql;
