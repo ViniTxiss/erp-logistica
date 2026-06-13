@@ -25,33 +25,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # 1. Tenta obter argumentos passados por parâmetro ou variáveis de ambiente
-        email = options.get("email") or os.environ.get("DJANGO_SUPERUSER_EMAIL") or os.environ.get("ADMIN_EMAIL")
-        password = options.get("password") or os.environ.get("DJANGO_SUPERUSER_PASSWORD") or os.environ.get("ADMIN_PASSWORD")
-        nome = options.get("nome") or os.environ.get("DJANGO_SUPERUSER_NOME") or "Administrador"
+        #    strip() e or None para tratar strings vazias vindas do shell ("$VAR" não definida)
+        email = (options.get("email") or "").strip() or \
+                os.environ.get("DJANGO_SUPERUSER_EMAIL", "").strip() or \
+                os.environ.get("ADMIN_EMAIL", "").strip() or None
+        password = (options.get("password") or "").strip() or \
+                   os.environ.get("DJANGO_SUPERUSER_PASSWORD", "").strip() or \
+                   os.environ.get("ADMIN_PASSWORD", "").strip() or None
+        nome = (options.get("nome") or "").strip() or \
+               os.environ.get("DJANGO_SUPERUSER_NOME", "").strip() or "Administrador"
 
         if not email or not password:
             self.stdout.write(
                 self.style.WARNING(
-                    "Aviso: E-mail ou Senha não foram fornecidos. "
-                    "Use os argumentos '--email' e '--password' ou configure as variáveis de ambiente "
-                    "'DJANGO_SUPERUSER_EMAIL' e 'DJANGO_SUPERUSER_PASSWORD'."
+                    "create_admin: DJANGO_SUPERUSER_EMAIL e/ou DJANGO_SUPERUSER_PASSWORD "
+                    "não definidos. Criação de admin pulada."
                 )
             )
-            # Como fallback, tenta rodar de forma interativa se possível
-            try:
-                if not email:
-                    email = input("E-mail: ")
-                if not password:
-                    import getpass
-                    password = getpass.getpass("Senha: ")
-            except (KeyboardInterrupt, EOFError):
-                self.stdout.write(
-                    self.style.WARNING(
-                        "Execução não-interativa ou cancelada detectada. "
-                        "Criação/atualização de administrador pulada."
-                    )
-                )
-                return
+            return
 
         if not email or not password:
             raise CommandError("E-mail e senha são obrigatórios para criar o administrador.")
