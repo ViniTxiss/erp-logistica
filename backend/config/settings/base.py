@@ -13,7 +13,7 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / ".env")
 
 # ─── Core ─────────────────────────────────────────────────────────────────────
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env("SECRET_KEY", default="django-insecure-build-default-key-xyz")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
@@ -80,7 +80,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # ─── Banco de dados ───────────────────────────────────────────────────────────
 DATABASES = {
-    "default": env.db("DATABASE_URL"),
+    "default": env.db("DATABASE_URL", default="sqlite:///:memory:"),
 }
 
 # ─── Auth customizado ─────────────────────────────────────────────────────────
