@@ -31,3 +31,10 @@ if SENTRY_DSN:
         send_default_pii=False,       # LGPD: do not send personal identifiable info
         environment="production",
     )
+
+# Whitenoise storage for compression and manifest caching
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
