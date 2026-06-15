@@ -65,3 +65,121 @@ def test_motorista_criar_view(client, usuario):
     assert "tms/partials/tabela_motoristas.html" in [t.name for t in response.templates]
     
     assert Motorista.objects.filter(nome_completo="João Caminhoneiro", empresa=usuario.empresa).exists()
+
+
+def test_romaneio_detalhe_view(client, usuario, veiculo, motorista):
+    client.force_login(usuario)
+    romaneio = Romaneio.objects.create(
+        empresa=usuario.empresa,
+        veiculo=veiculo,
+        motorista=motorista,
+        status="aberto"
+    )
+    url = reverse("tms_ui:romaneio_detalhe", kwargs={"pk": romaneio.id})
+    response = client.get(url)
+    assert response.status_code == 200
+    assert "tms/romaneio_detalhe.html" in [t.name for t in response.templates]
+    assert response.context["romaneio"] == romaneio
+
+
+def test_romaneio_iniciar_rota(client, usuario, veiculo, motorista):
+    client.force_login(usuario)
+    romaneio = Romaneio.objects.create(
+        empresa=usuario.empresa,
+        veiculo=veiculo,
+        motorista=motorista,
+        status="aberto"
+    )
+    url = reverse("tms_ui:romaneio_iniciar", kwargs={"pk": romaneio.id})
+    response = client.post(url)
+    assert response.status_code == 302
+    romaneio.refresh_from_db()
+    assert romaneio.status == "em_rota"
+
+
+def test_romaneio_concluir(client, usuario, veiculo, motorista):
+    client.force_login(usuario)
+    romaneio = Romaneio.objects.create(
+        empresa=usuario.empresa,
+        veiculo=veiculo,
+        motorista=motorista,
+        status="em_rota"
+    )
+    url = reverse("tms_ui:romaneio_concluir", kwargs={"pk": romaneio.id})
+    response = client.post(url)
+    assert response.status_code == 302
+    romaneio.refresh_from_db()
+    assert romaneio.status == "concluido"
+
+
+def test_item_confirmar_entrega_workflow(client, usuario, veiculo, motorista):
+    client.force_login(usuario)
+    romaneio = Romaneio.objects.create(
+        empresa=usuario.empresa,
+        veiculo=veiculo,
+        motorista=motorista,
+        status="em_rota"
+    )
+    item = romaneio.itens.create(
+        destinatario="Cliente Teste",
+        cep="12345-678",
+        logradouro="Rua Teste",
+        numero_end="123",
+        bairro="Bairro Teste",
+        cidade="Cidade Teste",
+        uf="SP",
+        status_entrega="pendente"
+    )
+    
+    url = reverse("tms_ui:item_confirmar_entrega", kwargs={"item_id": item.id})
+    
+    # GET modal form
+    response_get = client.get(url)
+    assert response_get.status_code == 200
+    assert "tms/partials/modal_pod.html" in [t.name for t in response_get.templates]
+    
+    # POST register POD
+    data = {
+        "assinado_por": "Recebedor Fulano",
+        "observacao": "Sem observações",
+        "latitude": "-23.5505",
+        "longitude": "-46.6333"
+    }
+    response_post = client.post(url, data, HTTP_HX_REQUEST="true")
+    assert response_post.status_code == 200
+    assert "tms/partials/detalhes_itens.html" in [t.name for t in response_post.templates]
+    
+    item.refresh_from_db()
+    assert item.status_entrega == "entregue"
+    assert item.pod.assinado_por == "Recebedor Fulano"
+    assert item.pod.latitude == -23.5505
+
+
+def test_ocorrencia_registrar_workflow(client, usuario, veiculo, motorista):
+    client.force_login(usuario)
+    romaneio = Romaneio.objects.create(
+        empresa=usuario.empresa,
+        veiculo=veiculo,
+        motorista=motorista,
+        status="em_rota"
+    )
+    
+    url = reverse("tms_ui:ocorrencia_registrar", kwargs={"romaneio_id": romaneio.id})
+    
+    # GET modal form
+    response_get = client.get(url)
+    assert response_get.status_code == 200
+    assert "tms/partials/modal_ocorrencia.html" in [t.name for t in response_get.templates]
+    
+    # POST occurrence
+    data = {
+        "tipo": "atraso",
+        "descricao": "Chuva forte causou atraso na entrega.",
+        "item_id": ""
+    }
+    response_post = client.post(url, data, HTTP_HX_REQUEST="true")
+    assert response_post.status_code == 200
+    
+    romaneio.refresh_from_db()
+    assert romaneio.status == "com_ocorrencia"
+    assert romaneio.ocorrencias.filter(tipo="atraso").exists()

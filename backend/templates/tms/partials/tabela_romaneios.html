@@ -13,7 +13,7 @@
             {% for romaneio in romaneios %}
             <tr class="hover:bg-slate-50/50 transition-colors group">
                 <td class="px-6 py-4 font-medium text-slate-800">
-                    <a href="#" class="text-brand-600 hover:text-brand-800 hover:underline">
+                    <a href="{% url 'tms_ui:romaneio_detalhe' romaneio.id %}" class="text-brand-600 hover:text-brand-800 hover:underline">
                         {{ romaneio.numero }}
                     </a>
                 </td>
@@ -54,9 +54,9 @@
                     {{ romaneio.created_at|date:"d/m/Y H:i" }}
                 </td>
                 <td class="px-6 py-4 text-right">
-                    <button class="text-slate-400 hover:text-brand-600 transition-colors opacity-0 group-hover:opacity-100">
-                        <i class="ti ti-dots-vertical"></i>
-                    </button>
+                    <a href="{% url 'tms_ui:romaneio_detalhe' romaneio.id %}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-brand-600 transition-all focus:outline-none">
+                        <i class="ti ti-chevron-right text-lg"></i>
+                    </a>
                 </td>
             </tr>
             {% empty %}

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Romaneio ROM-{{ romaneio.numero }} | Formuca ERP{% endblock %}
+
+{% block page_title %}Romaneio ROM-{{ romaneio.numero }}{% endblock %}
+{% block page_subtitle %}TMS — Operação de Transporte{% endblock %}
+
+{% block topbar_actions %}
+<div class="flex items-center gap-3">
+    <!-- Back to list -->
+    <a href="{% url 'tms_ui:romaneios_list' %}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-bold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200/60 rounded-xl transition-all focus:outline-none">
+        <i class="ti ti-arrow-left text-sm"></i>
+        Voltar à lista
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6" x-data="{ showPODModal: false, showOcorrenciaModal: false }" @close-modal.window="showPODModal = false; showOcorrenciaModal = false">
+    
+    <!-- Status & Quick Actions Header Banner -->
+    <div class="bg-white/60 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600">
+                <i class="ti ti-file-text text-2xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Status do Transporte</span>
+                    {% if romaneio.status == 'aberto' %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">Aberto</span>
+                    {% elif romaneio.status == 'em_rota' %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 animate-pulse">Em Rota</span>
+                    {% elif romaneio.status == 'concluido' %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Concluído</span>
+                    {% elif romaneio.status == 'com_ocorrencia' %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Com Ocorrência</span>
+                    {% else %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 text-white border border-slate-800">Cancelado</span>
+                    {% endif %}
+                </div>
+                <h2 class="text-lg font-bold text-slate-900 mt-1">Controle Operacional — Código: {{ romaneio.id|slice:":8" }}</h2>
+            </div>
+        </div>
+        
+        <!-- Action buttons to change state -->
+        <div class="flex items-center gap-3 self-end md:self-center">
+            {% if romaneio.status == 'aberto' %}
+            <button hx-post="{% url 'tms_ui:romaneio_iniciar' romaneio.id %}" 
+                    hx-confirm="Deseja realmente iniciar a rota e marcar o veículo como em trânsito?"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-brand-600 rounded-xl hover:bg-brand-500 transition-all focus:outline-none shadow-soft hover:-translate-y-0.5">
+                <i class="ti ti-player-play text-sm"></i>
+                Iniciar Rota / Saída
+            </button>
+            {% endif %}
+
+            {% if romaneio.status == 'em_rota' or romaneio.status == 'com_ocorrencia' %}
+            <button hx-get="{% url 'tms_ui:ocorrencia_registrar' romaneio.id %}"
+                    hx-target="#modal-portal"
+                    @click="showOcorrenciaModal = true"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/50 rounded-xl transition-all focus:outline-none">
+                <i class="ti ti-alert-triangle text-sm"></i>
+                Registrar Ocorrência
+            </button>
+
+            <button hx-post="{% url 'tms_ui:romaneio_concluir' romaneio.id %}" 
+                    hx-confirm="Deseja realmente concluir o romaneio? Todos os itens pendentes serão dados como concluídos."
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl transition-all focus:outline-none shadow-soft hover:-translate-y-0.5">
+                <i class="ti ti-circle-check text-sm"></i>
+                Finalizar Romaneio
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Main Content Layout (Two Columns) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left (Col 1 - 2/3 wide): Deliveries list -->
+        <div class="lg:col-span-2 space-y-4">
+            <h3 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <i class="ti ti-map-2 text-teal-600 text-lg"></i>
+                Itinerário & Pontos de Entrega
+            </h3>
+            
+            <!-- Stop listing container -->
+            {% include 'tms/partials/detalhes_itens.html' %}
+        </div>
+
+        <!-- Right (Col 2 - 1/3 wide): Transport details & occurrences logs -->
+        <div class="space-y-6">
+            
+            <!-- Card: Informações de Transporte -->
+            <div class="bg-white/60 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-5 shadow-sm space-y-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <i class="ti ti-info-circle text-sm"></i>
+                    Informações do Transporte
+                </h3>
+                
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <p class="font-bold text-slate-500">Motorista</p>
+                        <p class="font-semibold text-slate-800 mt-1 leading-snug">{{ romaneio.motorista.nome_completo|default:"Não definido" }}</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-500">Veículo / Placa</p>
+                        <p class="font-semibold text-slate-800 mt-1">{{ romaneio.veiculo.modelo|default:"N/A" }} — <strong class="text-brand-700 bg-brand-50 border border-brand-100 rounded px-1">{{ romaneio.veiculo.placa|default:"N/A" }}</strong></p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-500">Saída Prevista</p>
+                        <p class="font-semibold text-slate-800 mt-1">{{ romaneio.data_saida_prevista|date:"d/m/Y H:i"|default:"N/A" }}</p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-500">Saída Real</p>
+                        <p class="font-semibold text-slate-800 mt-1">{{ romaneio.data_saida_real|date:"d/m/Y H:i"|default:"Ainda não saiu" }}</p>
+                    </div>
+                    {% if romaneio.data_conclusao %}
+                    <div class="col-span-2 pt-2 border-t border-slate-100">
+                        <p class="font-bold text-slate-500">Conclusão Real</p>
+                        <p class="font-bold text-emerald-700 mt-0.5">{{ romaneio.data_conclusao|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="col-span-2 pt-2 border-t border-slate-100">
+                        <p class="font-bold text-slate-500">Operador Responsável</p>
+                        <p class="font-semibold text-slate-800 mt-1">{{ romaneio.responsavel.nome_completo|default:"Não informado" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Timeline de Ocorrências -->
+            <div class="bg-white/60 backdrop-blur-xl border border-slate-200/60 rounded-2xl p-5 shadow-sm space-y-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <i class="ti ti-history text-sm"></i>
+                    Histórico de Ocorrências
+                </h3>
+
+                <div class="relative pl-4 border-l border-slate-100 space-y-6">
+                    {% for ocorrencia in ocorrencias %}
+                    <div class="relative">
+                        <!-- Bullet point indicator -->
+                        <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full border bg-white {% if ocorrencia.tipo == 'roubo' or ocorrencia.tipo == 'acidente' %}border-rose-500 bg-rose-50{% else %}border-amber-500 bg-amber-50{% endif %}"></span>
+                        
+                        <div class="text-xs">
+                            <span class="font-bold {% if ocorrencia.tipo == 'roubo' or ocorrencia.tipo == 'acidente' %}text-rose-600{% else %}text-amber-600{% endif %}">
+                                {{ ocorrencia.get_tipo_display }}
+                            </span>
+                            <span class="text-[10px] text-slate-400 ml-1.5 font-semibold">{{ ocorrencia.created_at|date:"d/m H:i" }}</span>
+                            
+                            {% if ocorrencia.item %}
+                            <p class="text-[10px] text-slate-500 font-bold mt-0.5">Ref: Parada {{ ocorrencia.item.destinatario }}</p>
+                            {% endif %}
+                            
+                            <p class="text-slate-600 mt-1 font-medium leading-relaxed bg-white/40 border border-slate-100 rounded-lg p-2">
+                                {{ ocorrencia.descricao }}
+                            </p>
+                            
+                            <p class="text-[9px] text-slate-400 mt-1 font-medium">Registrado por: {{ ocorrencia.registrado_por.nome_completo|default:"Operador" }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-6 text-slate-400 font-medium">
+                        <i class="ti ti-checks text-2xl text-slate-300"></i>
+                        <p class="text-[11px] mt-1">Nenhuma ocorrência registrada.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
