@@ -33,6 +33,9 @@ Thumbs.db
 # Executáveis & Instaladores na raiz
 GoogleCloudSDKInstaller.exe
 
+# Local / Agent
+skills/
+
 # Testes
 .coverage
 htmlcov/

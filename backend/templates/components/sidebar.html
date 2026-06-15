@@ -1,60 +1,84 @@
 <aside class="w-64 flex-shrink-0 bg-white/60 backdrop-blur-xl border-r border-slate-200/60 flex flex-col transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
     <!-- Logo -->
-    <div class="h-20 flex items-center px-6 border-b border-slate-200/60">
+    <a href="{% url 'dashboard' %}" class="h-20 flex items-center px-6 border-b border-slate-200/60 hover:opacity-90 transition-opacity">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-violet-600 flex items-center justify-center shadow-glow mr-3">
             <i class="ti ti-package text-white text-lg"></i>
         </div>
         <span class="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">Formuca</span>
-    </div>
+    </a>
 
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-8">
         
+        <!-- Geral Section -->
+        <div>
+            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Geral</div>
+            <div class="space-y-1">
+                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 {% if request.resolver_match.url_name == 'dashboard' %}bg-white shadow-sm border-slate-200/50 text-brand-600 font-medium hover:shadow-soft{% else %}text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border-slate-200/50 border-transparent{% endif %}">
+                    <i class="ti ti-dashboard text-xl"></i>
+                    Dashboard
+                </a>
+            </div>
+        </div>
+
         <!-- WMS Section -->
         <div>
-            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Armazém</div>
+            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Armazém (WMS)</div>
             <div class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white shadow-sm border border-slate-200/50 text-brand-600 font-medium transition-all duration-200 hover:shadow-soft">
+                <a href="{% url 'wms_ui:recebimentos_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 {% if request.resolver_match.url_name == 'recebimentos_list' or request.resolver_match.url_name == 'recebimento_criar' %}bg-white shadow-sm border-slate-200/50 text-brand-600 font-medium hover:shadow-soft{% else %}text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border-slate-200/50 border-transparent{% endif %}">
                     <i class="ti ti-arrow-down-circle text-xl"></i>
                     Recebimento
                 </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border hover:border-slate-200/50 transition-all duration-200 border border-transparent">
-                    <i class="ti ti-arrow-up-circle text-xl"></i>
-                    Expedição
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-xl border border-transparent text-slate-400 cursor-not-allowed opacity-60">
+                    <span class="flex items-center gap-3">
+                        <i class="ti ti-arrow-up-circle text-xl"></i>
+                        Expedição
+                    </span>
+                    <span class="text-[9px] font-bold uppercase bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">Breve</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border hover:border-slate-200/50 transition-all duration-200 border border-transparent">
-                    <i class="ti ti-layout-grid text-xl"></i>
-                    Posições
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-xl border border-transparent text-slate-400 cursor-not-allowed opacity-60">
+                    <span class="flex items-center gap-3">
+                        <i class="ti ti-layout-grid text-xl"></i>
+                        Posições
+                    </span>
+                    <span class="text-[9px] font-bold uppercase bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">Breve</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border hover:border-slate-200/50 transition-all duration-200 border border-transparent">
-                    <i class="ti ti-chart-bar text-xl"></i>
-                    Inventário
+                <a href="#" class="flex items-center justify-between px-3 py-2.5 rounded-xl border border-transparent text-slate-400 cursor-not-allowed opacity-60">
+                    <span class="flex items-center gap-3">
+                        <i class="ti ti-chart-bar text-xl"></i>
+                        Inventário
+                    </span>
+                    <span class="text-[9px] font-bold uppercase bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">Breve</span>
                 </a>
             </div>
         </div>
 
         <!-- TMS Section -->
         <div>
-            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transporte</div>
+            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transporte (TMS)</div>
             <div class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border hover:border-slate-200/50 transition-all duration-200 border border-transparent">
+                <a href="{% url 'tms_ui:romaneios_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 {% if request.resolver_match.url_name == 'romaneios_list' or request.resolver_match.url_name == 'romaneio_criar' %}bg-white shadow-sm border-slate-200/50 text-brand-600 font-medium hover:shadow-soft{% else %}text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border-slate-200/50 border-transparent{% endif %}">
                     <i class="ti ti-file-text text-xl"></i>
                     Romaneios
                 </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border hover:border-slate-200/50 transition-all duration-200 border border-transparent">
+                <a href="{% url 'tms_ui:motoristas_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 {% if request.resolver_match.url_name == 'motoristas_list' or request.resolver_match.url_name == 'motorista_criar' %}bg-white shadow-sm border-slate-200/50 text-brand-600 font-medium hover:shadow-soft{% else %}text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border-slate-200/50 border-transparent{% endif %}">
                     <i class="ti ti-truck text-xl"></i>
-                    Transportadoras
+                    Motoristas
                 </a>
             </div>
         </div>
 
         <!-- CRM Section -->
         <div>
-            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Clientes</div>
+            <div class="px-2 mb-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Clientes (CRM)</div>
             <div class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border hover:border-slate-200/50 transition-all duration-200 border border-transparent">
+                <a href="{% url 'crm_ui:clientes_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 {% if request.resolver_match.url_name == 'clientes_list' or request.resolver_match.url_name == 'cliente_criar' %}bg-white shadow-sm border-slate-200/50 text-brand-600 font-medium hover:shadow-soft{% else %}text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border-slate-200/50 border-transparent{% endif %}">
                     <i class="ti ti-users text-xl"></i>
                     Clientes
+                </a>
+                <a href="{% url 'crm_ui:oportunidades_list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-200 {% if request.resolver_match.url_name == 'oportunidades_list' or request.resolver_match.url_name == 'oportunidade_criar' %}bg-white shadow-sm border-slate-200/50 text-brand-600 font-medium hover:shadow-soft{% else %}text-slate-500 hover:bg-white/80 hover:text-slate-900 hover:shadow-sm hover:border-slate-200/50 border-transparent{% endif %}">
+                    <i class="ti ti-coin text-xl"></i>
+                    Oportunidades
                 </a>
             </div>
         </div>

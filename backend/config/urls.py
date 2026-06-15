@@ -11,11 +11,11 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
-from django.views.generic import RedirectView
+from apps.core import ui_views as core_ui_views
 
 urlpatterns = [
-    # Redirecionamento temporário da raiz para o WMS
-    path("", RedirectView.as_view(url="/wms/recebimentos/", permanent=False)),
+    # Dashboard Principal
+    path("", core_ui_views.dashboard, name="dashboard"),
     # Admin
     path("admin/", admin.site.urls),
 

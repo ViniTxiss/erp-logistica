@@ -2,7 +2,7 @@
 
 > **Para a IA:** Leia este arquivo inteiro antes de fazer qualquer coisa.
 > Ele resume o estado atual do projeto, convenções, decisões e próximos passos.
-> Última atualização: 2026-06-08
+> Última atualização: 2026-06-15
 
 > **Para manter atualizado:** `python manage.py export_context --patch CONTEXT.md`
 > **Template de sessão:** `docs/SESSION_TEMPLATE.md`
@@ -228,10 +228,11 @@ Métodos:
 
 ## 6. Próximos passos (em ordem de prioridade)
 
-### 🔴 PRÓXIMO: Deploy em produção (Railway)
-- Preparar variáveis de ambiente.
-- Testar rodando com `gunicorn`.
-- Configurar deploy na plataforma Railway utilizando o Procfile.
+### ✅ Deploy em produção (Railway) — CONCLUÍDO (2026-06-15)
+- URL: `https://erp-logistica-production-8958.up.railway.app`
+- Admin: `vini17brito@gmail.com` / var `ADMIN_PASS` no Railway
+- **Quirk Railway:** vars com `PASSWORD` no nome são filtradas do `os.environ` do container.
+  Solução: usar `ADMIN_PASS` (sem a palavra PASSWORD) e ler via `os.environ.get("ADMIN_PASS")`.
 
 ### 🟢 DEPOIS: Cadastro de Veículos e Refinamentos
 - Adicionar gestão de veículos (CRUD) na interface do TMS.
@@ -265,4 +266,4 @@ Métodos:
 - [x] **Frontend:** WMS MVP (HTMX + Tailwind Premium)
 - [x] **Frontend:** TMS
 - [x] **Frontend:** CRM
-- [ ] Deploy em produção (Railway)
+- [x] Deploy em produção (Railway) ← concluído em 2026-06-15

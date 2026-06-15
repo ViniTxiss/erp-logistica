@@ -24,22 +24,23 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        # 1. Tenta obter argumentos passados por parâmetro ou variáveis de ambiente
-        #    strip() e or None para tratar strings vazias vindas do shell ("$VAR" não definida)
+        # 1. Tenta obter email/senha via args CLI ou variáveis de ambiente.
+        #    NOTA: Railway filtra vars com 'PASSWORD' no nome — use ADMIN_PASS como fallback.
         email = (options.get("email") or "").strip() or \
                 os.environ.get("DJANGO_SUPERUSER_EMAIL", "").strip() or \
                 os.environ.get("ADMIN_EMAIL", "").strip() or None
         password = (options.get("password") or "").strip() or \
                    os.environ.get("DJANGO_SUPERUSER_PASSWORD", "").strip() or \
-                   os.environ.get("ADMIN_PASSWORD", "").strip() or None
+                   os.environ.get("ADMIN_PASSWORD", "").strip() or \
+                   os.environ.get("ADMIN_PASS", "").strip() or None
         nome = (options.get("nome") or "").strip() or \
                os.environ.get("DJANGO_SUPERUSER_NOME", "").strip() or "Administrador"
 
         if not email or not password:
             self.stdout.write(
                 self.style.WARNING(
-                    "create_admin: DJANGO_SUPERUSER_EMAIL e/ou DJANGO_SUPERUSER_PASSWORD "
-                    "não definidos. Criação de admin pulada."
+                    "create_admin: credenciais não definidas (DJANGO_SUPERUSER_EMAIL / ADMIN_PASS). "
+                    "Criação de admin pulada."
                 )
             )
             return
