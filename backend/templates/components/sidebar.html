@@ -1,11 +1,20 @@
-<aside class="w-64 flex-shrink-0 bg-white/60 backdrop-blur-xl border-r border-slate-200/60 flex flex-col transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
-    <!-- Logo -->
-    <a href="{% url 'dashboard' %}" class="h-20 flex items-center px-6 border-b border-slate-200/60 hover:opacity-90 transition-opacity">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-violet-600 flex items-center justify-center shadow-glow mr-3">
-            <i class="ti ti-package text-white text-lg"></i>
-        </div>
-        <span class="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">Formuca</span>
-    </a>
+<aside class="-translate-x-full fixed inset-y-0 left-0 z-30 w-64 bg-white/95 backdrop-blur-xl border-r border-slate-200/60 flex flex-col transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)] lg:static lg:translate-x-0"
+       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+    <!-- Logo & Close Header -->
+    <div class="h-20 flex items-center justify-between px-6 border-b border-slate-200/60">
+        <a href="{% url 'dashboard' %}" class="flex items-center hover:opacity-90 transition-opacity">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-violet-600 flex items-center justify-center shadow-glow mr-3">
+                <i class="ti ti-package text-white text-lg"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">Formuca</span>
+        </a>
+        <!-- Close Button (Mobile only) -->
+        <button @click="sidebarOpen = false" 
+                class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 lg:hidden focus:outline-none transition-colors" 
+                aria-label="Fechar menu">
+            <i class="ti ti-x text-xl"></i>
+        </button>
+    </div>
 
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-8">
